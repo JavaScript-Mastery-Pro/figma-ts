@@ -3,6 +3,7 @@ import { Work_Sans } from "next/font/google";
 
 import "./globals.css";
 import { Room } from "./Room";
+import { CanvasProvider } from "@/context/CanvasProvider";
 
 export const metadata = {
   title: "Figma Clone",
@@ -23,8 +24,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${workSans.className} bg-primary-grey-100`}>
-        <Room>{children}</Room>
+      <body className={`${workSans.className}`}>
+        <Room>
+          <CanvasProvider>{children}</CanvasProvider>
+        </Room>
       </body>
     </html>
   );

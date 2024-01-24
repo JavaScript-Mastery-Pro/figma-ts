@@ -18,11 +18,13 @@ import FlyingReaction from "@/components/reaction/FlyingReaction";
 import Navbar from "@/components/Navbar";
 import LeftSidebar from "@/components/LeftSidebar";
 import RightSidebar from "@/components/RightSidebar";
+import { useCanvas } from "@/context/CanvasProvider";
 
 function Home() {
   const others = useOthers();
   const [{ cursor }, updateMyPresence] = useMyPresence() as any;
   const broadcast = useBroadcastEvent();
+  const { canvasRef } = useCanvas();
 
   const [reactions, setReactions] = useState<Reaction[]>([]);
   const [cursorState, setCursorState] = useState<CursorState>({
@@ -177,7 +179,7 @@ function Home() {
           onPointerDown={handlePointerDown}
           onPointerUp={handlePointerUp}
         >
-          <canvas className="w-full h-full bg-primary-grey-100" id="canvas" />
+          <canvas className="" id="canvas" ref={canvasRef} />
 
           {reactions.map((reaction) => (
             <FlyingReaction
