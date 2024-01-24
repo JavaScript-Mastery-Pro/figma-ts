@@ -15,6 +15,9 @@ import LiveCursors from "@/components/cursor/LiveCursors";
 import ReactionSelector from "@/components/reaction/ReactionButton";
 import useInterval from "@/hooks/useInterval";
 import FlyingReaction from "@/components/reaction/FlyingReaction";
+import Navbar from "@/components/Navbar";
+import LeftSidebar from "@/components/LeftSidebar";
+import RightSidebar from "@/components/RightSidebar";
 
 function Home() {
   const others = useOthers();
@@ -36,14 +39,6 @@ function Home() {
       reactions.filter((reaction) => reaction.timestamp > Date.now() - 4000)
     );
   }, 1000);
-
-  // Hide CursorChat after 5 seconds
-  useInterval(() => {
-    if (cursorState.mode === CursorMode.Chat) {
-      setCursorState({ mode: CursorMode.Hidden });
-      updateMyPresence({ message: "" });
-    }
-  }, 10000);
 
   useInterval(() => {
     if (
@@ -115,10 +110,14 @@ function Home() {
   const handlePointerMove = (event: React.PointerEvent) => {
     event.preventDefault();
     if (cursor == null || cursorState.mode !== CursorMode.ReactionSelector) {
+      // get the cursor position in the canvas
+      const x = event.clientX - event.currentTarget.getBoundingClientRect().x;
+      const y = event.clientY - event.currentTarget.getBoundingClientRect().y;
+
       updateMyPresence({
         cursor: {
-          x: Math.round(event.clientX),
-          y: Math.round(event.clientY),
+          x,
+          y,
         },
       });
     }
@@ -130,14 +129,19 @@ function Home() {
     });
     updateMyPresence({
       cursor: null,
+      message: null,
     });
   };
 
   const handlePointerDown = (event: React.PointerEvent) => {
+    // get the cursor position in the canvas
+    const x = event.clientX - event.currentTarget.getBoundingClientRect().x;
+    const y = event.clientY - event.currentTarget.getBoundingClientRect().y;
+
     updateMyPresence({
       cursor: {
-        x: Math.round(event.clientX),
-        y: Math.round(event.clientY),
+        x,
+        y,
       },
     });
     setCursorState((state: CursorState) =>
@@ -156,47 +160,56 @@ function Home() {
   };
 
   return (
-    <>
-      <div
-        className="relative flex h-screen w-screen touch-none items-center justify-center overflow-hidden"
-        style={{
-          cursor: cursorState.mode === CursorMode.Chat ? "none" : "auto",
-        }}
-        onPointerMove={handlePointerMove}
-        onPointerLeave={handlePointerLeave}
-        onPointerDown={handlePointerDown}
-        onPointerUp={handlePointerUp}
-      >
-        {reactions.map((reaction) => (
-          <FlyingReaction
-            key={reaction.timestamp.toString()}
-            x={reaction.point.x}
-            y={reaction.point.y}
-            timestamp={reaction.timestamp}
-            value={reaction.value}
-          />
-        ))}
+    <main className="overflow-hidden h-screen">
+      <Navbar />
 
-        {cursor && (
-          <CursorChat
-            cursor={cursor}
-            cursorState={cursorState}
-            setCursorState={setCursorState}
-            updateMyPresence={updateMyPresence}
-          />
-        )}
+      <section className="flex flex-row h-full">
+        <LeftSidebar />
 
-        {cursorState.mode === CursorMode.ReactionSelector && (
-          <ReactionSelector
-            setReaction={(reaction) => {
-              setReaction(reaction);
-            }}
-          />
-        )}
+        <div
+          className="relative flex flex-1 w-full h-full items-center justify-center"
+          id="canvas"
+          style={{
+            cursor: cursorState.mode === CursorMode.Chat ? "none" : "auto",
+          }}
+          onPointerMove={handlePointerMove}
+          onPointerLeave={handlePointerLeave}
+          onPointerDown={handlePointerDown}
+          onPointerUp={handlePointerUp}
+        >
+          {reactions.map((reaction) => (
+            <FlyingReaction
+              key={reaction.timestamp.toString()}
+              x={reaction.point.x}
+              y={reaction.point.y}
+              timestamp={reaction.timestamp}
+              value={reaction.value}
+            />
+          ))}
 
-        <LiveCursors others={others} />
-      </div>
-    </>
+          {cursor && (
+            <CursorChat
+              cursor={cursor}
+              cursorState={cursorState}
+              setCursorState={setCursorState}
+              updateMyPresence={updateMyPresence}
+            />
+          )}
+
+          {cursorState.mode === CursorMode.ReactionSelector && (
+            <ReactionSelector
+              setReaction={(reaction) => {
+                setReaction(reaction);
+              }}
+            />
+          )}
+
+          <LiveCursors others={others} />
+        </div>
+
+        <RightSidebar />
+      </section>
+    </main>
   );
 }
 
