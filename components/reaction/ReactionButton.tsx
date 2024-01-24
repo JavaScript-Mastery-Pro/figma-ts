@@ -7,7 +7,7 @@ type Props = {
 function ReactionSelector({ setReaction }: Props) {
   return (
     <div
-      className="-translate-x-1/2 -translate-y-1/2 transform rounded-full bg-white px-2"
+      className="absolute transform rounded-full bg-white px-2"
       style={{
         boxShadow:
           "0 0 0 0.5px rgba(0, 0, 0, 0.08), 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",

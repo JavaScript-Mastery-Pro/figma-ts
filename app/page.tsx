@@ -177,6 +177,8 @@ function Home() {
           onPointerDown={handlePointerDown}
           onPointerUp={handlePointerUp}
         >
+          <canvas className="w-full h-full bg-primary-grey-100" id="canvas" />
+
           {reactions.map((reaction) => (
             <FlyingReaction
               key={reaction.timestamp.toString()}
