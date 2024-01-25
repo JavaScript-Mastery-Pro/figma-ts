@@ -1,9 +1,9 @@
-import type { Metadata } from "next";
 import { Work_Sans } from "next/font/google";
 
 import "./globals.css";
 import { Room } from "./Room";
 import { CanvasProvider } from "@/context/CanvasProvider";
+import { TooltipProvider } from "@/components/ui/tooltip";
 
 export const metadata = {
   title: "Figma Clone",
@@ -26,7 +26,9 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${workSans.className}`}>
         <Room>
-          <CanvasProvider>{children}</CanvasProvider>
+          <TooltipProvider>
+            <CanvasProvider>{children}</CanvasProvider>
+          </TooltipProvider>
         </Room>
       </body>
     </html>

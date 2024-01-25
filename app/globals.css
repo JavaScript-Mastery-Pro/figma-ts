@@ -5,3 +5,9 @@
 * {
   font-family: work sans, sans-serif;
 }
+
+@layer utilities {
+  .no-ring {
+    @apply focus-visible:ring-offset-0 ring-offset-0 outline-none ring-0 focus:ring-0 focus:ring-offset-0 !important;
+  }
+}

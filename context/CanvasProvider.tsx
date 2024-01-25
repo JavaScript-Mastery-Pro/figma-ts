@@ -1,7 +1,13 @@
 "use client";
 
 import { fabric } from "fabric";
-import React, { useContext, createContext, useRef, useEffect } from "react";
+import React, {
+  useContext,
+  createContext,
+  useRef,
+  useEffect,
+  useState,
+} from "react";
 
 import { createSpecificShape } from "@/lib/shapes";
 import { Gradient, Pattern } from "fabric/fabric-impl";
@@ -34,7 +40,32 @@ export const CanvasProvider = ({
 
   const isDrawing = useRef(false);
   const shapeRef = useRef<any>(null);
-  const selectedShapeType = "triangle";
+  const selectedShapeRef = useRef<string | null>(null);
+
+  const [activeElement, setActiveElement] = useState({
+    name: "",
+    value: "",
+    icon: "",
+  });
+
+  const handleActiveElement = (elem: any) => {
+    setActiveElement(elem);
+
+    if (elem.value !== "image" && elem.value !== "comments") {
+      selectedShapeRef.current = elem.value;
+
+      if (elem.value === "reset") {
+        fabricRef.current.clear();
+        setActiveElement(null);
+      }
+
+      if (elem.value === "delete") {
+        setActiveElement(null);
+      }
+    } else {
+      selectedShapeRef.current = "";
+    }
+  };
 
   // create a new fabric canvas instance that should take the width and height of the canvas element
   const initializeFabric = () => {
@@ -83,7 +114,9 @@ export const CanvasProvider = ({
       const pointer = canvas.getPointer(options.e);
       const target = canvas.findTarget(options.e, false);
 
-      if (selectedShapeType === "freeform") {
+      if (!selectedShapeRef.current) return;
+
+      if (selectedShapeRef.current === "freeform") {
         // Handle freeform drawing separately
         isDrawing.current = true;
         canvas.isDrawingMode = true;
@@ -92,7 +125,8 @@ export const CanvasProvider = ({
 
       if (
         target &&
-        (target.type === selectedShapeType || target.type === "activeSelection")
+        (target.type === selectedShapeRef.current ||
+          target.type === "activeSelection")
       ) {
         // Clicked on an existing rectangle, initiate move instead of creating a new one
         isDrawing.current = false;
@@ -102,25 +136,60 @@ export const CanvasProvider = ({
         // Clicked on an empty space, start drawing a new rectangle
         isDrawing.current = true;
 
-        shapeRef.current = createSpecificShape(selectedShapeType, pointer);
+        shapeRef.current = createSpecificShape(
+          selectedShapeRef.current,
+          pointer
+        );
+
+        console.log(shapeRef.current, selectedShapeRef.current);
 
         canvas.add(shapeRef.current);
       }
     });
 
     canvas.on("mouse:move", (options) => {
+      console.log(selectedShapeRef.current);
+
       if (!isDrawing.current) return;
-      if (selectedShapeType === "freeform") {
+      if (selectedShapeRef.current === "freeform") {
         // Handle freeform drawing separately
         return;
       }
 
       const pointer = canvas.getPointer(options.e);
 
-      shapeRef.current?.set({
-        width: pointer.x - (shapeRef.current?.left || 0),
-        height: pointer.y - (shapeRef.current?.top || 0),
-      });
+      switch (selectedShapeRef?.current) {
+        case "rectangle":
+          shapeRef.current?.set({
+            width: pointer.x - (shapeRef.current?.left || 0),
+            height: pointer.y - (shapeRef.current?.top || 0),
+          });
+          break;
+
+        case "circle":
+          shapeRef.current.set({
+            radius: Math.abs(pointer.x - (shapeRef.current?.left || 0)) / 2,
+          });
+
+          break;
+
+        case "triangle":
+          shapeRef.current?.set({
+            width: pointer.x - (shapeRef.current?.left || 0),
+            height: pointer.y - (shapeRef.current?.top || 0),
+          });
+          break;
+
+        case "line":
+          shapeRef.current?.set({
+            x2: pointer.x,
+            y2: pointer.y,
+          });
+          break;
+
+        default:
+          break;
+      }
 
       canvas.renderAll();
     });
@@ -128,7 +197,20 @@ export const CanvasProvider = ({
     canvas.on("mouse:up", () => {
       isDrawing.current = false;
 
+      shapeRef.current = null;
+      selectedShapeRef.current = null;
+
       getShapes();
+
+      if (!canvas.isDrawingMode) {
+        setTimeout(() => {
+          setActiveElement({
+            name: "Select",
+            value: "select",
+            icon: "/assets/icons/select.svg",
+          });
+        }, 700);
+      }
     });
 
     canvas?.on("object:moving", (options) => {
@@ -166,6 +248,9 @@ export const CanvasProvider = ({
         canvasRef,
         fabricRef,
         allShapes,
+        selectedShapeRef,
+        activeElement,
+        handleActiveElement,
       }}
     >
       {children}
