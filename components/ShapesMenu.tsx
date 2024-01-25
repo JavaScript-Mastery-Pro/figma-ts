@@ -35,16 +35,14 @@ function ShapesMenu({ item, activeElement, handleActiveElement }: Props) {
       <DropdownMenu>
         <DropdownMenuTrigger asChild className="no-ring">
           <Button
-            className={`relative w-5 h-5 object-contain ${
-              isDropdownElem ? "bg-primary-green" : "hover:bg-primary-grey-200"
-            }`}
+            className="relative w-5 h-5 object-contain"
             onClick={() => handleActiveElement(item)}
           >
             <Image
               src={isDropdownElem ? activeElement.icon : item.icon}
               alt={item.name}
               fill
-              className={activeElement.value === item.value ? "invert" : ""}
+              className={isDropdownElem ? "invert" : ""}
             />
           </Button>
         </DropdownMenuTrigger>

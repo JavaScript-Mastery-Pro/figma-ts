@@ -21,7 +21,7 @@ function LeftSidebar() {
 
             return (
               <div
-                key={shape?.objectId}
+                key={shape.objectId}
                 className="group my-1 flex items-center gap-2 px-5 py-2.5 hover:cursor-pointer hover:bg-primary-green hover:text-primary-black"
               >
                 <Image

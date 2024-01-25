@@ -51,17 +51,17 @@ export const navElements = [
   },
   {
     icon: "/assets/delete.svg",
-    name: "Delete",
     value: "delete",
+    name: "Delete",
   },
   {
     icon: "/assets/reset.svg",
-    name: "Reset",
     value: "reset",
+    name: "Reset",
   },
   {
     icon: "/assets/comments.svg",
-    name: "Comments",
     value: "comments",
+    name: "Comments",
   },
 ];

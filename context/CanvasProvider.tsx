@@ -11,6 +11,7 @@ import React, {
 
 import { createSpecificShape } from "@/lib/shapes";
 import { Gradient, Pattern } from "fabric/fabric-impl";
+import { handleDelete } from "@/lib/key-events";
 
 type ShapeData = {
   type: string;
@@ -26,6 +27,13 @@ type CanvasContextType = {
   canvasRef: React.RefObject<HTMLCanvasElement>;
   fabricRef: React.RefObject<fabric.Canvas | null>;
   allShapes: React.RefObject<ShapeData[]>;
+  selectedShapeRef: React.RefObject<string | null>;
+  activeElement: {
+    name: string;
+    value: string;
+    icon: string;
+  } | null;
+  handleActiveElement: (elem: any) => void;
 };
 
 const CanvasContext = createContext<CanvasContextType | undefined>(undefined);
@@ -42,7 +50,11 @@ export const CanvasProvider = ({
   const shapeRef = useRef<any>(null);
   const selectedShapeRef = useRef<string | null>(null);
 
-  const [activeElement, setActiveElement] = useState({
+  const [activeElement, setActiveElement] = useState<{
+    name: string;
+    value: string;
+    icon: string;
+  } | null>({
     name: "",
     value: "",
     icon: "",
@@ -54,11 +66,6 @@ export const CanvasProvider = ({
     if (elem.value !== "image" && elem.value !== "comments") {
       selectedShapeRef.current = elem.value;
 
-      if (elem.value === "reset") {
-        fabricRef.current.clear();
-        setActiveElement(null);
-      }
-
       if (elem.value === "delete") {
         setActiveElement(null);
       }
@@ -67,7 +74,6 @@ export const CanvasProvider = ({
     }
   };
 
-  // create a new fabric canvas instance that should take the width and height of the canvas element
   const initializeFabric = () => {
     const canvasElement = document.getElementById("canvas");
 
@@ -114,26 +120,25 @@ export const CanvasProvider = ({
       const pointer = canvas.getPointer(options.e);
       const target = canvas.findTarget(options.e, false);
 
-      if (!selectedShapeRef.current) return;
+      console.log(selectedShapeRef.current);
 
       if (selectedShapeRef.current === "freeform") {
-        // Handle freeform drawing separately
         isDrawing.current = true;
         canvas.isDrawingMode = true;
         return;
       }
+
+      canvas.isDrawingMode = false;
 
       if (
         target &&
         (target.type === selectedShapeRef.current ||
           target.type === "activeSelection")
       ) {
-        // Clicked on an existing rectangle, initiate move instead of creating a new one
         isDrawing.current = false;
         canvas.setActiveObject(target);
         target.setCoords();
       } else {
-        // Clicked on an empty space, start drawing a new rectangle
         isDrawing.current = true;
 
         shapeRef.current = createSpecificShape(
@@ -141,21 +146,17 @@ export const CanvasProvider = ({
           pointer
         );
 
-        console.log(shapeRef.current, selectedShapeRef.current);
-
-        canvas.add(shapeRef.current);
+        if (shapeRef.current) {
+          canvas.add(shapeRef.current);
+        }
       }
     });
 
     canvas.on("mouse:move", (options) => {
-      console.log(selectedShapeRef.current);
-
       if (!isDrawing.current) return;
-      if (selectedShapeRef.current === "freeform") {
-        // Handle freeform drawing separately
-        return;
-      }
+      if (selectedShapeRef.current === "freeform") return;
 
+      canvas.isDrawingMode = false;
       const pointer = canvas.getPointer(options.e);
 
       switch (selectedShapeRef?.current) {
@@ -170,7 +171,6 @@ export const CanvasProvider = ({
           shapeRef.current.set({
             radius: Math.abs(pointer.x - (shapeRef.current?.left || 0)) / 2,
           });
-
           break;
 
         case "triangle":
@@ -198,7 +198,11 @@ export const CanvasProvider = ({
       isDrawing.current = false;
 
       shapeRef.current = null;
-      selectedShapeRef.current = null;
+
+      if (selectedShapeRef.current !== "freeform") {
+        // canvas.isDrawingMode = false;
+        selectedShapeRef.current = null;
+      }
 
       getShapes();
 

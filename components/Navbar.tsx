@@ -13,6 +13,14 @@ import { useCanvas } from "@/context/CanvasProvider";
 function Navbar() {
   const { activeElement, handleActiveElement } = useCanvas();
 
+  const isActive = (value: string | Array<any>) => {
+    return (
+      activeElement.value === value ||
+      (Array.isArray(value) &&
+        value.some((val) => val.value === activeElement.value))
+    );
+  };
+
   return (
     <nav className="flex items-center justify-between bg-primary-black px-5 text-white gap-4 select-none">
       <Image src="/assets/logo.svg" alt="FigPro Logo" width={58} height={20} />
@@ -23,7 +31,7 @@ function Navbar() {
             key={item.name}
             className={`group px-2.5 py-5 flex justify-center items-center
             ${
-              activeElement.value === item.value
+              isActive(item.value)
                 ? "bg-primary-green"
                 : "hover:bg-primary-grey-200"
             }
@@ -44,7 +52,7 @@ function Navbar() {
                   src={item.icon}
                   alt={item.name}
                   fill
-                  className={activeElement.value === item.value ? "invert" : ""}
+                  className={isActive(item.value) ? "invert" : ""}
                 />
               </Button>
             )}
