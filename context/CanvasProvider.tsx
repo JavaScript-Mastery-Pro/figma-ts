@@ -4,24 +4,35 @@ import { fabric } from "fabric";
 import React, { useContext, createContext, useRef, useEffect } from "react";
 
 import { createSpecificShape } from "@/lib/shapes";
+import { Gradient, Pattern } from "fabric/fabric-impl";
 
-interface CanvasContextType {
+type ShapeData = {
+  type: string;
+  width: number;
+  height: number;
+  fill: string | Pattern | Gradient;
+  left: number;
+  top: number;
+};
+
+type CanvasContextType = {
   canvasRef: React.RefObject<HTMLCanvasElement>;
-  fabricRef: React.RefObject<null>;
-}
+  fabricRef: React.RefObject<fabric.Canvas | null>;
+  allShapes: React.RefObject<ShapeData[]>;
+};
 
 const CanvasContext = createContext<CanvasContextType | undefined>(undefined);
 
 export const CanvasProvider = ({
   children,
 }: Readonly<{ children: React.ReactNode }>) => {
-  const canvasRef = useRef(null);
-  const fabricRef = useRef(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const fabricRef = useRef<fabric.Canvas | null>(null);
 
-  const allShapes = useRef([]);
+  const allShapes = useRef<ShapeData[]>([]);
 
   const isDrawing = useRef(false);
-  const shapeRef = useRef(null);
+  const shapeRef = useRef<any>(null);
   const selectedShapeType = "triangle";
 
   // create a new fabric canvas instance that should take the width and height of the canvas element
@@ -29,8 +40,8 @@ export const CanvasProvider = ({
     const canvasElement = document.getElementById("canvas");
 
     const canvas = new fabric.Canvas(canvasRef.current, {
-      width: canvasElement.clientWidth,
-      height: canvasElement.clientHeight,
+      width: canvasElement?.clientWidth,
+      height: canvasElement?.clientHeight,
     });
 
     fabricRef.current = canvas;
@@ -42,25 +53,23 @@ export const CanvasProvider = ({
     const canvasElement = document.getElementById("canvas");
 
     const canvas = fabricRef.current;
-    canvas.setWidth(canvasElement.clientWidth);
-    canvas.setHeight(canvasElement.clientHeight);
-    canvas.renderAll();
+    canvas?.setWidth(canvasElement?.clientWidth || 0);
+    canvas?.setHeight(canvasElement?.clientHeight || 0);
+    canvas?.renderAll();
   };
 
   const getShapes = () => {
     const canvas = fabricRef.current;
-    const shapes = canvas?.getObjects();
+    const shapes = canvas?.getObjects() || [];
 
-    const shapesData = shapes?.map((shape) => {
-      return {
-        type: shape.type,
-        width: shape.width,
-        height: shape.height,
-        fill: shape.fill,
-        left: shape.left,
-        top: shape.top,
-      };
-    });
+    const shapesData = shapes.map((shape) => ({
+      type: shape.type || "",
+      width: shape.width || 0,
+      height: shape.height || 0,
+      fill: shape.fill || "",
+      left: shape.left || 0,
+      top: shape.top || 0,
+    }));
 
     allShapes.current = shapesData;
   };
@@ -107,8 +116,8 @@ export const CanvasProvider = ({
       const pointer = canvas.getPointer(options.e);
 
       shapeRef.current?.set({
-        width: pointer.x - shapeRef.current?.left,
-        height: pointer.y - shapeRef.current?.top,
+        width: pointer.x - (shapeRef.current?.left || 0),
+        height: pointer.y - (shapeRef.current?.top || 0),
       });
 
       canvas.renderAll();
@@ -120,23 +129,24 @@ export const CanvasProvider = ({
       getShapes();
     });
 
-    canvas.on("object:moving", (options) => {
-      const target = options.target;
-      const canvas = target.canvas;
+    canvas?.on("object:moving", (options) => {
+      const target = options.target as fabric.Object;
+      const canvas = target.canvas as fabric.Canvas;
 
       target.setCoords();
 
-      // Keep rectangles within canvas
-      if (target.left < 0) {
-        target.left = 0;
-      } else if (target.left + target.width > canvas.width) {
-        target.left = canvas.width - target.width;
+      if (target && target.left) {
+        target.left = Math.max(
+          0,
+          Math.min(target.left, (canvas.width || 0) - (target.width || 0))
+        );
       }
 
-      if (target.top < 0) {
-        target.top = 0;
-      } else if (target.top + target.height > canvas.height) {
-        target.top = canvas.height - target.height;
+      if (target && target.top) {
+        target.top = Math.max(
+          0,
+          Math.min(target.top, (canvas.height || 0) - (target.height || 0))
+        );
       }
     });
 
