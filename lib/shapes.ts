@@ -108,43 +108,26 @@ export const createShape = (canvas, pointer, shapeType) => {
   return createSpecificShape(shapeType, pointer);
 };
 
-export const modifyShape = (
-  canvas,
-  activeObjectsRef,
-  attributes,
-  syncShapeInStorage
-) => {
-  const {
-    elementColor,
-    width,
-    height,
-    radius,
-    fontSize,
-    fontFamily,
-    fontWeight,
-    strokeColor,
-    alignment,
-  } = attributes;
+export const modifyShape = (canvas, activeObjectsRef, property, value) => {
+  const activeElement = activeObjectsRef.current[0];
 
-  activeObjectsRef?.current?.forEach((obj) => {
-    obj.set({
-      selectable: true,
-      fill: elementColor || obj.fill,
-      width: width || obj.width,
-      height: height || obj.height,
-      radius: radius || obj.radius,
-      fontFamily: fontFamily || obj.fontFamily,
-      fontSize: fontSize || obj.fontSize,
-      fontWeight: fontWeight || obj.fontWeight,
-      stroke: strokeColor || obj.stroke,
-    });
+  console.log(activeElement);
 
-    if (alignment) {
-      alignObjects(canvas, alignment, syncShapeInStorage);
-    }
-
-    syncShapeInStorage(obj);
-  });
+  // if property is width or height, we need to use scaleToWidth or scaleToHeight
+  if (property === "width") {
+    activeElement.scaleToWidth(value);
+    canvas.requestRenderAll();
+    return;
+  } else if (property === "height") {
+    activeElement.scaleToHeight(value);
+    canvas.requestRenderAll();
+    return;
+  } else {
+    if (activeElement[property] === value) return;
+    activeElement.set(property, value);
+  }
 
   canvas.renderAll();
+
+  // syncShapeInStorage(obj);
 };

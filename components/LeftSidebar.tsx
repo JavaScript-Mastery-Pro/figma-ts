@@ -38,7 +38,7 @@ function LeftSidebar() {
         </div>
       </section>
     ),
-    [allShapes?.current.length]
+    [allShapes?.current?.length]
   );
 
   return memoizedSection;

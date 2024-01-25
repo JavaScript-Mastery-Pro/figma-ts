@@ -15,9 +15,9 @@ function Navbar() {
 
   const isActive = (value: string | Array<any>) => {
     return (
-      activeElement.value === value ||
+      (activeElement && activeElement.value === value) ||
       (Array.isArray(value) &&
-        value.some((val) => val.value === activeElement.value))
+        value.some((val) => val.value === activeElement?.value))
     );
   };
 

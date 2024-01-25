@@ -11,7 +11,6 @@ import React, {
 
 import { createSpecificShape } from "@/lib/shapes";
 import { Gradient, Pattern } from "fabric/fabric-impl";
-import { handleDelete } from "@/lib/key-events";
 
 type ShapeData = {
   type: string;
@@ -34,6 +33,27 @@ type CanvasContextType = {
     icon: string;
   } | null;
   handleActiveElement: (elem: any) => void;
+  elementAttributes: {
+    width: string;
+    height: string;
+    fontSize: string;
+    fontFamily: string;
+    fontWeight: string;
+    fill: string;
+    stroke: string;
+  };
+  setElementAttributes: React.Dispatch<
+    React.SetStateAction<{
+      width: string;
+      height: string;
+      fontSize: string;
+      fontFamily: string;
+      fontWeight: string;
+      fill: string;
+      stroke: string;
+    }>
+  >;
+  activeObjectsRef: React.RefObject<any[]>;
 };
 
 const CanvasContext = createContext<CanvasContextType | undefined>(undefined);
@@ -49,6 +69,7 @@ export const CanvasProvider = ({
   const isDrawing = useRef(false);
   const shapeRef = useRef<any>(null);
   const selectedShapeRef = useRef<string | null>(null);
+  const activeObjectsRef = useRef<any>([]);
 
   const [activeElement, setActiveElement] = useState<{
     name: string;
@@ -58,6 +79,16 @@ export const CanvasProvider = ({
     name: "",
     value: "",
     icon: "",
+  });
+
+  const [elementAttributes, setElementAttributes] = useState({
+    width: "",
+    height: "",
+    fontSize: "",
+    fontFamily: "",
+    fontWeight: "",
+    fill: "#aabbcc",
+    stroke: "#aabbcc",
   });
 
   const handleActiveElement = (elem: any) => {
@@ -107,6 +138,7 @@ export const CanvasProvider = ({
       fill: shape.fill || "",
       left: shape.left || 0,
       top: shape.top || 0,
+      // @ts-ignore
       objectId: shape?.objectId,
     }));
 
@@ -238,6 +270,39 @@ export const CanvasProvider = ({
       }
     });
 
+    // listen for element selection
+    canvas.on("selection:created", (options) => {
+      activeObjectsRef.current = canvas.getActiveObjects();
+
+      // check if the selected element is a single element
+      if (activeObjectsRef.current.length === 1) {
+        const activeElement = activeObjectsRef.current[0];
+
+        // set the element attributes
+        setElementAttributes(() => ({
+          width: Math.round(activeElement?.getScaledWidth() || 0).toString(),
+          height: Math.round(activeElement?.getScaledHeight() || 0).toString(),
+          fontSize: activeElement?.fontSize || "",
+          fontFamily: activeElement?.fontFamily || "",
+          fontWeight: activeElement?.fontWeight || "",
+          fill: activeElement?.fill || "",
+          stroke: activeElement?.stroke || "",
+        }));
+      }
+    });
+
+    // listen for object scaling
+    canvas.on("object:scaling", (options) => {
+      const activeElement = options.target;
+      console.log("activeElement width", activeElement?.width);
+
+      setElementAttributes((prev) => ({
+        ...prev,
+        width: Math.round(activeElement?.getScaledWidth() || 0).toString(),
+        height: Math.round(activeElement?.getScaledHeight() || 0).toString(),
+      }));
+    });
+
     window.addEventListener("resize", handleResize);
 
     return () => {
@@ -254,7 +319,10 @@ export const CanvasProvider = ({
         allShapes,
         selectedShapeRef,
         activeElement,
+        activeObjectsRef,
         handleActiveElement,
+        elementAttributes,
+        setElementAttributes,
       }}
     >
       {children}
