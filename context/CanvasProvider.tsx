@@ -13,6 +13,7 @@ type ShapeData = {
   fill: string | Pattern | Gradient;
   left: number;
   top: number;
+  objectId: string | undefined;
 };
 
 type CanvasContextType = {
@@ -69,6 +70,7 @@ export const CanvasProvider = ({
       fill: shape.fill || "",
       left: shape.left || 0,
       top: shape.top || 0,
+      objectId: shape?.objectId,
     }));
 
     allShapes.current = shapesData;

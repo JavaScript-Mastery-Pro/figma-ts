@@ -15,9 +15,9 @@ function LeftSidebar() {
           Layers
         </h3>
         <div className="flex flex-col">
-          {allShapes?.current.map((shape) => (
+          {allShapes?.current?.map((shape) => (
             <div
-              key={shape.id}
+              key={shape?.objectId}
               className="group my-1 flex items-center gap-2 px-5 py-2.5 hover:cursor-pointer hover:bg-primary-green hover:text-primary-black"
             >
               <Image
