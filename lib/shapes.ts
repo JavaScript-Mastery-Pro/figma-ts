@@ -3,7 +3,6 @@
 
 import { fabric } from "fabric";
 import { v4 as uuidv4 } from "uuid";
-import { alignObjects } from "./utils";
 
 export const createRectangle = (pointer) => {
   const rect = new fabric.Rect({

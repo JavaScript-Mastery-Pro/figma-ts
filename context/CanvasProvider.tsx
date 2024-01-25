@@ -1,8 +1,9 @@
 "use client";
 
-import { createSpecificShape } from "@/lib/shapes";
 import { fabric } from "fabric";
 import React, { useContext, createContext, useRef, useEffect } from "react";
+
+import { createSpecificShape } from "@/lib/shapes";
 
 interface CanvasContextType {
   canvasRef: React.RefObject<HTMLCanvasElement>;
@@ -16,6 +17,8 @@ export const CanvasProvider = ({
 }: Readonly<{ children: React.ReactNode }>) => {
   const canvasRef = useRef(null);
   const fabricRef = useRef(null);
+
+  const allShapes = useRef([]);
 
   const isDrawing = useRef(false);
   const shapeRef = useRef(null);
@@ -42,6 +45,24 @@ export const CanvasProvider = ({
     canvas.setWidth(canvasElement.clientWidth);
     canvas.setHeight(canvasElement.clientHeight);
     canvas.renderAll();
+  };
+
+  const getShapes = () => {
+    const canvas = fabricRef.current;
+    const shapes = canvas?.getObjects();
+
+    const shapesData = shapes?.map((shape) => {
+      return {
+        type: shape.type,
+        width: shape.width,
+        height: shape.height,
+        fill: shape.fill,
+        left: shape.left,
+        top: shape.top,
+      };
+    });
+
+    allShapes.current = shapesData;
   };
 
   useEffect(() => {
@@ -71,7 +92,6 @@ export const CanvasProvider = ({
         isDrawing.current = true;
 
         shapeRef.current = createSpecificShape(selectedShapeType, pointer);
-        console.log(shapeRef.current);
 
         canvas.add(shapeRef.current);
       }
@@ -96,6 +116,28 @@ export const CanvasProvider = ({
 
     canvas.on("mouse:up", () => {
       isDrawing.current = false;
+
+      getShapes();
+    });
+
+    canvas.on("object:moving", (options) => {
+      const target = options.target;
+      const canvas = target.canvas;
+
+      target.setCoords();
+
+      // Keep rectangles within canvas
+      if (target.left < 0) {
+        target.left = 0;
+      } else if (target.left + target.width > canvas.width) {
+        target.left = canvas.width - target.width;
+      }
+
+      if (target.top < 0) {
+        target.top = 0;
+      } else if (target.top + target.height > canvas.height) {
+        target.top = canvas.height - target.height;
+      }
     });
 
     window.addEventListener("resize", handleResize);
@@ -111,6 +153,7 @@ export const CanvasProvider = ({
       value={{
         canvasRef,
         fabricRef,
+        allShapes,
       }}
     >
       {children}
