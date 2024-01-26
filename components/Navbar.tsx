@@ -9,6 +9,7 @@ import { navElements } from "@/constants";
 
 import ActiveUsers from "./users/ActiveUsers";
 import { useCanvas } from "@/context/CanvasProvider";
+import { NewThread } from "./comments/NewThread";
 
 function Navbar() {
   const { activeElement, handleActiveElement } = useCanvas();
@@ -43,6 +44,17 @@ function Navbar() {
                 activeElement={activeElement}
                 handleActiveElement={handleActiveElement}
               />
+            ) : item?.value === "comments" ? (
+              <NewThread>
+                <Button className="relative w-5 h-5 object-contain">
+                  <Image
+                    src={item.icon}
+                    alt={item.name}
+                    fill
+                    className={isActive(item.value) ? "invert" : ""}
+                  />
+                </Button>
+              </NewThread>
             ) : (
               <Button
                 className="relative w-5 h-5 object-contain"

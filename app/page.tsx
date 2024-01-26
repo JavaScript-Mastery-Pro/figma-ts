@@ -19,6 +19,7 @@ import Navbar from "@/components/Navbar";
 import LeftSidebar from "@/components/LeftSidebar";
 import RightSidebar from "@/components/RightSidebar";
 import { useCanvas } from "@/context/CanvasProvider";
+import { Comments } from "@/components/comments/Comments";
 
 function Home() {
   const others = useOthers();
@@ -209,6 +210,7 @@ function Home() {
           )}
 
           <LiveCursors others={others} />
+          {/* <Comments /> */}
         </div>
 
         <RightSidebar />

@@ -111,8 +111,6 @@ export const createShape = (canvas, pointer, shapeType) => {
 export const modifyShape = (canvas, activeObjectsRef, property, value) => {
   const activeElement = activeObjectsRef.current[0];
 
-  console.log(activeElement);
-
   // if property is width or height, we need to use scaleToWidth or scaleToHeight
   if (property === "width") {
     activeElement.scaleToWidth(value);

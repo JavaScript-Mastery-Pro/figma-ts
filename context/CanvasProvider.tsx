@@ -152,8 +152,6 @@ export const CanvasProvider = ({
       const pointer = canvas.getPointer(options.e);
       const target = canvas.findTarget(options.e, false);
 
-      console.log(selectedShapeRef.current);
-
       if (selectedShapeRef.current === "freeform") {
         isDrawing.current = true;
         canvas.isDrawingMode = true;

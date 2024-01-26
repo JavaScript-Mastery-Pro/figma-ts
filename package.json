@@ -11,6 +11,8 @@
   "dependencies": {
     "@liveblocks/client": "^1.9.7",
     "@liveblocks/react": "^1.9.7",
+    "@liveblocks/react-comments": "^1.9.7",
+    "@radix-ui/react-collapsible": "^1.0.3",
     "@radix-ui/react-dropdown-menu": "^2.0.6",
     "@radix-ui/react-label": "^2.0.2",
     "@radix-ui/react-select": "^2.0.0",

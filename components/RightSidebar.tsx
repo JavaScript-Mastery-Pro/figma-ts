@@ -23,8 +23,6 @@ function RightSidebar() {
   // Memoized handleInputChange function
   const handleInputChange = useMemo(
     () => (property: string, value: string) => {
-      console.log("handleInputChange", property, value);
-
       setElementAttributes((prev) => ({ ...prev, [property]: value }));
 
       modifyShape(fabricRef.current, activeObjectsRef, property, value);
@@ -33,8 +31,6 @@ function RightSidebar() {
   );
 
   const memoizedContent = useMemo(() => {
-    console.log("rendering right sidebar");
-
     return (
       <section className="flex flex-col border-t border-primary-grey-200 bg-primary-black text-primary-grey-300 min-w-[227px] sticky right-0 h-full max-sm:hidden select-none">
         <h3 className="border-b border-primary-grey-200 px-5 py-4 text-xs uppercase">

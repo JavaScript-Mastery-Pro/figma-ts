@@ -8,7 +8,7 @@ export function Room({ children }: { children: React.ReactNode }) {
   return (
     <RoomProvider
       id="fig-room"
-      initialPresence={{ cursor: null, cursorColor: null }}
+      initialPresence={{ cursor: null, cursorColor: null, editingText: null }}
       initialStorage={{
         canvas: new LiveMap(),
       }}

@@ -82,14 +82,6 @@ const RenderSelect = ({
   fontFamily,
   handleInputChange,
 }: SelectProps) => {
-  console.log(
-    "RenderSelect",
-    config.property,
-    fontFamily,
-    fontWeight,
-    fontSize
-  );
-
   return (
     <Select
       key={config.property}
