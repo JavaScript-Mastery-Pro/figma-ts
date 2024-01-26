@@ -1,7 +1,6 @@
 "use client";
 
 import { fabric } from "fabric";
-import { v4 as uuid4 } from "uuid";
 import { useState, useEffect, useCallback, useRef } from "react";
 
 import {
@@ -15,7 +14,13 @@ import {
 
 import CursorChat from "@/components/cursor/CursorChat";
 
-import { CursorMode, CursorState, Reaction, ReactionEvent } from "@/types/type";
+import {
+  Attributes,
+  CursorMode,
+  CursorState,
+  Reaction,
+  ReactionEvent,
+} from "@/types/type";
 
 import { createSpecificShape } from "@/lib/shapes";
 import { handleDelete } from "@/lib/key-events";
@@ -55,13 +60,10 @@ function Home() {
 
   const syncShapeInStorage = useMutation(({ storage }, object) => {
     if (!object) return;
-    const { objectId, customSelected } = object;
-
-    console.log({ object });
+    const { objectId } = object;
 
     const shapeData = object.toJSON();
     shapeData.objectId = objectId;
-    shapeData.customSelected = customSelected;
 
     const canvasObjects = storage.get("canvasObjects");
     canvasObjects.set(objectId, shapeData);
@@ -96,8 +98,7 @@ function Home() {
     icon: "",
   });
 
-  const isEditingRef = useRef(false);
-  const [elementAttributes, setElementAttributes] = useState({
+  const [elementAttributes, setElementAttributes] = useState<Attributes>({
     width: "",
     height: "",
     fontSize: "",
@@ -453,13 +454,20 @@ function Home() {
       const selectedElement = options?.selected[0];
 
       if (selectedElement && options.selected.length === 1) {
-        setElementAttributes((prev) => ({
-          ...prev,
+        setElementAttributes({
           width: Math.round(selectedElement?.getScaledWidth() || 0).toString(),
           height: Math.round(
             selectedElement?.getScaledHeight() || 0
           ).toString(),
-        }));
+          fill: selectedElement?.fill?.toString() || "",
+          stroke: selectedElement?.stroke || "",
+          // @ts-ignore
+          fontSize: selectedElement?.fontSize || "",
+          // @ts-ignore
+          fontFamily: selectedElement?.fontFamily || "",
+          // @ts-ignore
+          fontWeight: selectedElement?.fontWeight || "",
+        });
       }
     });
 
@@ -486,17 +494,19 @@ function Home() {
     fabricRef.current?.clear();
 
     Array.from(canvasObjects, ([objectId, objectData]) => {
-      fabric.util.enlivenObjects([objectData], (enlivenedObjects) => {
-        enlivenedObjects.forEach((enlivenedObj) => {
-          // check if the enlivened object has same objectId as the one in activeObjectRef
-          if (activeObjectRef.current?.objectId === objectId) {
-            // if it does, then set the element as selected
-            fabricRef.current?.setActiveObject(enlivenedObj);
-          }
+      fabric.util.enlivenObjects(
+        [objectData],
+        (enlivenedObjects: fabric.Object[]) => {
+          enlivenedObjects.forEach((enlivenedObj) => {
+            if (activeObjectRef.current?.objectId === objectId) {
+              fabricRef.current?.setActiveObject(enlivenedObj);
+            }
 
-          fabricRef.current?.add(enlivenedObj);
-        });
-      });
+            fabricRef.current?.add(enlivenedObj);
+          });
+        },
+        "fabric"
+      );
     });
 
     fabricRef.current?.renderAll();

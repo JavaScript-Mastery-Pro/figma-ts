@@ -46,3 +46,13 @@ export type ShapeData = {
   top: number;
   objectId: string | undefined;
 };
+
+export type Attributes = {
+  width: string;
+  height: string;
+  fontSize: string;
+  fontFamily: string;
+  fontWeight: string;
+  fill: string;
+  stroke: string;
+};

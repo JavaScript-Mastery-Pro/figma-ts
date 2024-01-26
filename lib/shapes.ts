@@ -119,6 +119,8 @@ export const modifyShape = (
 
   if (!selectedElement || selectedElement?.type === "activeSelection") return;
 
+  console.log("modify shape", selectedElement[property], value);
+
   // if property is width or height, we need to use scaleToWidth or scaleToHeight
   if (property === "width") {
     selectedElement.scaleToWidth(value);

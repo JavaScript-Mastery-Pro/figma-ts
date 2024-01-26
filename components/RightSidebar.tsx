@@ -8,28 +8,11 @@ import Alignment from "./settings/Alignment";
 import Dimensions from "./settings/Dimensions";
 
 import { modifyShape } from "@/lib/shapes";
+import { Attributes } from "@/types/type";
 
 type Props = {
-  elementAttributes: {
-    width: string;
-    height: string;
-    fontSize: string;
-    fontFamily: string;
-    fontWeight: string;
-    fill: string;
-    stroke: string;
-  };
-  setElementAttributes: React.Dispatch<
-    React.SetStateAction<{
-      width: string;
-      height: string;
-      fontSize: string;
-      fontFamily: string;
-      fontWeight: string;
-      fill: string;
-      stroke: string;
-    }>
-  >;
+  elementAttributes: Attributes;
+  setElementAttributes: React.Dispatch<React.SetStateAction<Attributes>>;
   fabricRef: React.RefObject<fabric.Canvas | null>;
   activeObjectRef: React.RefObject<fabric.Object | null>;
   syncShapeInStorage: (obj: any) => void;
