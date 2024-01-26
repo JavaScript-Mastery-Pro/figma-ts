@@ -1,3 +1,5 @@
+import { Gradient, Pattern } from "fabric/fabric-impl";
+
 export enum CursorMode {
   Hidden,
   Chat,
@@ -33,4 +35,14 @@ export type ReactionEvent = {
   x: number;
   y: number;
   value: string;
+};
+
+export type ShapeData = {
+  type: string;
+  width: number;
+  height: number;
+  fill: string | Pattern | Gradient;
+  left: number;
+  top: number;
+  objectId: string | undefined;
 };

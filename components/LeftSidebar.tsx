@@ -3,20 +3,17 @@
 import { useMemo } from "react";
 import Image from "next/image";
 
-import { useCanvas } from "@/context/CanvasProvider";
 import { getShapeInfo } from "@/lib/utils";
 
-function LeftSidebar() {
-  const { allShapes } = useCanvas();
-
-  const memoizedSection = useMemo(
-    () => (
+function LeftSidebar({ allShapes }: { allShapes: React.RefObject<any> }) {
+  const memoizedShapes = useMemo(() => {
+    return (
       <section className="flex flex-col border-t border-primary-grey-200 bg-primary-black text-primary-grey-300 min-w-[227px] sticky left-0 h-full max-sm:hidden select-none overflow-y-auto pb-20">
         <h3 className="border border-primary-grey-200 px-5 py-4 text-xs uppercase">
           Layers
         </h3>
         <div className="flex flex-col">
-          {allShapes?.current?.map((shape) => {
+          {allShapes?.current?.map((shape: any) => {
             const info = getShapeInfo(shape?.type);
 
             return (
@@ -37,11 +34,10 @@ function LeftSidebar() {
           })}
         </div>
       </section>
-    ),
-    [allShapes?.current?.length]
-  );
+    );
+  }, [allShapes?.current?.length]);
 
-  return memoizedSection;
+  return memoizedShapes;
 }
 
 export default LeftSidebar;

@@ -1,4 +1,4 @@
-import React, { useMemo, useRef } from "react";
+import React, { memo, useMemo, useRef } from "react";
 
 import Text from "./settings/Text";
 import Color from "./settings/Color";
@@ -7,25 +7,48 @@ import Groups from "./settings/Groups";
 import Alignment from "./settings/Alignment";
 import Dimensions from "./settings/Dimensions";
 
-import { useCanvas } from "@/context/CanvasProvider";
 import { modifyShape } from "@/lib/shapes";
 
-function RightSidebar() {
+type Props = {
+  elementAttributes: {
+    width: string;
+    height: string;
+    fontSize: string;
+    fontFamily: string;
+    fontWeight: string;
+    fill: string;
+    stroke: string;
+  };
+  setElementAttributes: React.Dispatch<
+    React.SetStateAction<{
+      width: string;
+      height: string;
+      fontSize: string;
+      fontFamily: string;
+      fontWeight: string;
+      fill: string;
+      stroke: string;
+    }>
+  >;
+  fabricRef: React.RefObject<fabric.Canvas | null>;
+  syncShapeInStorage: (obj: any) => void;
+};
+
+function RightSidebar({
+  elementAttributes,
+  setElementAttributes,
+  fabricRef,
+  syncShapeInStorage,
+}: Props) {
   const colorInputRef = useRef(null);
   const strokeInputRef = useRef(null);
-  const {
-    elementAttributes,
-    setElementAttributes,
-    fabricRef,
-    activeObjectsRef,
-  } = useCanvas();
 
   // Memoized handleInputChange function
   const handleInputChange = useMemo(
     () => (property: string, value: string) => {
       setElementAttributes((prev) => ({ ...prev, [property]: value }));
 
-      modifyShape(fabricRef.current, activeObjectsRef, property, value);
+      modifyShape(fabricRef.current, property, value, syncShapeInStorage);
     },
     []
   );

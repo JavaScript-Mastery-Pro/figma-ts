@@ -10,7 +10,7 @@ export function Room({ children }: { children: React.ReactNode }) {
       id="fig-room"
       initialPresence={{ cursor: null, cursorColor: null, editingText: null }}
       initialStorage={{
-        canvas: new LiveMap(),
+        canvasObjects: new LiveMap(),
       }}
     >
       <ClientSideSuspense

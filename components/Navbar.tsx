@@ -1,19 +1,22 @@
 "use client";
 
 import Image from "next/image";
-import { memo, useState } from "react";
+import { memo } from "react";
 
 import { Button } from "./ui/button";
 import ShapesMenu from "./ShapesMenu";
 import { navElements } from "@/constants";
 
 import ActiveUsers from "./users/ActiveUsers";
-import { useCanvas } from "@/context/CanvasProvider";
 import { NewThread } from "./comments/NewThread";
 
-function Navbar() {
-  const { activeElement, handleActiveElement } = useCanvas();
-
+function Navbar({
+  activeElement,
+  handleActiveElement,
+}: {
+  activeElement: any;
+  handleActiveElement: any;
+}) {
   const isActive = (value: string | Array<any>) => {
     return (
       (activeElement && activeElement.value === value) ||
@@ -77,4 +80,6 @@ function Navbar() {
   );
 }
 
-export default memo(Navbar);
+export default memo(Navbar, (prevProps, nextProps) => {
+  return prevProps.activeElement === nextProps.activeElement;
+});

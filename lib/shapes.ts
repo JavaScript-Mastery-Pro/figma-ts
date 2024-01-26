@@ -108,24 +108,28 @@ export const createShape = (canvas, pointer, shapeType) => {
   return createSpecificShape(shapeType, pointer);
 };
 
-export const modifyShape = (canvas, activeObjectsRef, property, value) => {
-  const activeElement = activeObjectsRef.current[0];
+export const modifyShape = (canvas, property, value, syncShapeInStorage) => {
+  const selectedElement = canvas.getActiveObject();
+
+  // keep the element in selection mode
+  selectedElement?.set("active", true);
+
+  console.log(selectedElement);
+
+  if (!selectedElement || selectedElement?.type === "activeSelection") return;
 
   // if property is width or height, we need to use scaleToWidth or scaleToHeight
   if (property === "width") {
-    activeElement.scaleToWidth(value);
-    canvas.requestRenderAll();
-    return;
+    selectedElement.scaleToWidth(value);
   } else if (property === "height") {
-    activeElement.scaleToHeight(value);
+    selectedElement.scaleToHeight(value);
     canvas.requestRenderAll();
-    return;
   } else {
-    if (activeElement[property] === value) return;
-    activeElement.set(property, value);
+    if (selectedElement[property] === value) return;
+    selectedElement.set(property, value);
   }
 
-  canvas.renderAll();
+  canvas.requestRenderAll();
 
-  // syncShapeInStorage(obj);
+  syncShapeInStorage(selectedElement);
 };

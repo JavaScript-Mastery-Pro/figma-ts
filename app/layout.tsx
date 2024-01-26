@@ -2,7 +2,6 @@ import { Work_Sans } from "next/font/google";
 
 import "./globals.css";
 import { Room } from "./Room";
-import { CanvasProvider } from "@/context/CanvasProvider";
 import { TooltipProvider } from "@/components/ui/tooltip";
 
 export const metadata = {
@@ -26,9 +25,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${workSans.className} bg-primary-grey-200`}>
         <Room>
-          <TooltipProvider>
-            <CanvasProvider>{children}</CanvasProvider>
-          </TooltipProvider>
+          <TooltipProvider>{children}</TooltipProvider>
         </Room>
       </body>
     </html>
