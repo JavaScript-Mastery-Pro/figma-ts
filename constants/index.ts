@@ -74,6 +74,8 @@ export const groupingOptions = [
 export const fontFamilyOptions = [
   { value: "Helvetica", label: "Helvetica" },
   { value: "Times New Roman", label: "Times New Roman" },
+  { value: "Comic Sans MS", label: "Comic Sans MS" },
+  { value: "Brush Script MT", label: "Brush Script MT" },
 ];
 
 export const fontSizeOptions = [
@@ -137,15 +139,15 @@ export const fontSizeOptions = [
 
 export const fontWeightOptions = [
   {
-    value: "normal",
+    value: "400",
     label: "Normal",
   },
   {
-    value: "semibold",
+    value: "500",
     label: "Semibold",
   },
   {
-    value: "bold",
+    value: "600",
     label: "Bold",
   },
 ];

@@ -268,6 +268,25 @@ export const CanvasProvider = ({
           Math.min(target.top, (canvas.height || 0) - (target.height || 0))
         );
       }
+
+      // restrict the element from going outside of the canvas at the top
+      // if (target && target.top) {
+      //   target.top = Math.max(0, target.top);
+      // }
+
+      // increase the height of the canvas if the element is dragged to the bottom
+      // if (target && target.top) {
+      //   if (target.top + target.height > canvas.height) {
+      //     canvas.setHeight(target.top + target.height);
+      //   }
+      // }
+
+      // increase the width of the canvas if the element is dragged to the right
+      // if (target && target.left) {
+      //   if (target.left + target.width > canvas.width) {
+      //     canvas.setWidth(target.left + target.width);
+      //   }
+      // }
     });
 
     // listen for element selection
@@ -294,7 +313,6 @@ export const CanvasProvider = ({
     // listen for object scaling
     canvas.on("object:scaling", (options) => {
       const activeElement = options.target;
-      console.log("activeElement width", activeElement?.width);
 
       setElementAttributes((prev) => ({
         ...prev,
