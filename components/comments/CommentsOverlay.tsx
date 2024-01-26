@@ -7,7 +7,7 @@ import {
   useUser,
 } from "@/liveblocks.config";
 import { ThreadData } from "@liveblocks/client";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   getCoordsFromAccurateCursorPositions,
   getCoordsFromElement,
@@ -229,22 +229,22 @@ function OverlayThread({
     <div
       ref={threadRef}
       id={`thread-${thread.id}`}
-      className="flex gap-5"
-      //   style={{
-      //     transform: `translate(${coords.x}px, ${coords.y}px)`,
-      //     zIndex: draggingRef.current ? 9999999 : thread.metadata.zIndex,
-      //   }}
+      className="flex gap-5 absolute top-0 left-0"
+      style={{
+        transform: `translate(${coords.x}px, ${coords.y}px)`,
+        zIndex: draggingRef.current ? 9999999 : thread.metadata.zIndex,
+      }}
     >
       <PinnedThread
         thread={thread}
-        // onPointerDown={handlePointerDown}
-        // onPointerMove={handlePointerMove}
-        // onPointerUp={handlePointerUp}
-        // onFocus={handleIncreaseZIndex}
-        onPointerDown={() => {}}
-        onPointerMove={() => {}}
-        onPointerUp={() => {}}
-        onFocus={() => {}}
+        onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
+        onPointerUp={handlePointerUp}
+        onFocus={handleIncreaseZIndex}
+        // onPointerDown={() => {}}
+        // onPointerMove={() => {}}
+        // onPointerUp={() => {}}
+        // onFocus={() => {}}
       />
     </div>
   );

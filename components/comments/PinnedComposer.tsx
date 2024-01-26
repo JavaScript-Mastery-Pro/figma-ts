@@ -1,8 +1,8 @@
 "use client";
 
+import Image from "next/image";
 import { PointerEventHandler } from "react";
 import { Composer, ComposerProps } from "@liveblocks/react-comments";
-import Image from "next/image";
 
 type Props = {
   onPointerDown: PointerEventHandler<HTMLDivElement>;

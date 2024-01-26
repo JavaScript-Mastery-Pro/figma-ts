@@ -63,7 +63,11 @@ export function PinnedThread({
   // memoize the result of this function so that it doesn't change on every render but only when the thread changes
   const memoizedContent = useMemo(() => {
     return (
-      <div className="absolute flex gap-4" {...props} onClick={onFocus}>
+      <div
+        className="absolute flex gap-4 cursor-pointer z-[10000]"
+        {...props}
+        onClick={onFocus}
+      >
         <div
           className="select-none relative w-9 h-9 shadow rounded-tl-md rounded-tr-full rounded-br-full rounded-bl-full bg-white flex justify-center items-center"
           onPointerDown={handlePointerDown}
@@ -93,7 +97,13 @@ export function PinnedThread({
         ) : null}
       </div>
     );
-  }, [thread.comments.length]);
+  }, [
+    thread.comments.length,
+    minimized,
+    handlePointerDown,
+    handlePointerUp,
+    onFocus,
+  ]);
 
   return <>{memoizedContent}</>;
 }

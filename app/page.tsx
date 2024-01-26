@@ -210,7 +210,7 @@ function Home() {
           )}
 
           <LiveCursors others={others} />
-          {/* <Comments /> */}
+          <Comments />
         </div>
 
         <RightSidebar />
