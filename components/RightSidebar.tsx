@@ -31,6 +31,7 @@ type Props = {
     }>
   >;
   fabricRef: React.RefObject<fabric.Canvas | null>;
+  activeObjectRef: React.RefObject<fabric.Object | null>;
   syncShapeInStorage: (obj: any) => void;
 };
 
@@ -38,6 +39,7 @@ function RightSidebar({
   elementAttributes,
   setElementAttributes,
   fabricRef,
+  activeObjectRef,
   syncShapeInStorage,
 }: Props) {
   const colorInputRef = useRef(null);
@@ -48,7 +50,13 @@ function RightSidebar({
     () => (property: string, value: string) => {
       setElementAttributes((prev) => ({ ...prev, [property]: value }));
 
-      modifyShape(fabricRef.current, property, value, syncShapeInStorage);
+      modifyShape(
+        fabricRef.current,
+        property,
+        value,
+        activeObjectRef,
+        syncShapeInStorage
+      );
     },
     []
   );

@@ -53,7 +53,7 @@ export const handleDelete = (canvas, deleteShapeFromStorage) => {
 
   if (activeObjects.length > 0) {
     activeObjects.forEach((obj) => {
-      // deleteShapeFromStorage(obj.objectId);
+      deleteShapeFromStorage(obj.objectId);
       canvas.remove(obj);
     });
   }

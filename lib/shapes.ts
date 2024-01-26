@@ -80,7 +80,7 @@ export const createSpecificShape = (shapeType, pointer) => {
   }
 };
 
-export const handleImageUpload = (file, canvas, syncShapeInStorage) => {
+export const handleImageUpload = (file) => {
   const reader = new FileReader();
 
   reader.onload = () => {
@@ -88,11 +88,11 @@ export const handleImageUpload = (file, canvas, syncShapeInStorage) => {
       img.scaleToWidth(200);
       img.scaleToHeight(200);
 
-      canvas.current.add(img);
-      img.objectId = uuidv4();
+      // canvas.current.add(img);
+      // img.objectId = uuidv4();
 
-      syncShapeInStorage(img);
-      canvas.current.requestRenderAll();
+      // syncShapeInStorage(img);
+      // canvas.current.requestRenderAll();
     });
   };
 
@@ -108,13 +108,14 @@ export const createShape = (canvas, pointer, shapeType) => {
   return createSpecificShape(shapeType, pointer);
 };
 
-export const modifyShape = (canvas, property, value, syncShapeInStorage) => {
+export const modifyShape = (
+  canvas,
+  property,
+  value,
+  activeObjectRef,
+  syncShapeInStorage
+) => {
   const selectedElement = canvas.getActiveObject();
-
-  // keep the element in selection mode
-  selectedElement?.set("active", true);
-
-  console.log(selectedElement);
 
   if (!selectedElement || selectedElement?.type === "activeSelection") return;
 
@@ -128,6 +129,9 @@ export const modifyShape = (canvas, property, value, syncShapeInStorage) => {
     if (selectedElement[property] === value) return;
     selectedElement.set(property, value);
   }
+
+  // set selectedElement to activeObjectRef
+  activeObjectRef.current = selectedElement;
 
   canvas.requestRenderAll();
 

@@ -8,6 +8,8 @@ import {
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import { Button } from "./ui/button";
+import { useRef } from "react";
+import { handleImageUpload } from "@/lib/shapes";
 
 type elem = {
   name: string;
@@ -26,6 +28,7 @@ type Props = {
 };
 
 function ShapesMenu({ item, activeElement, handleActiveElement }: Props) {
+  const imageInputRef = useRef(null);
   const isDropdownElem = item.value.some(
     (elem) => elem.value === activeElement.value
   );
@@ -87,9 +90,9 @@ function ShapesMenu({ item, activeElement, handleActiveElement }: Props) {
       <input
         type="file"
         className="hidden"
-        // ref={imageInputRef}
+        ref={imageInputRef}
         accept="image/*"
-        onChange={() => {}}
+        onChange={handleImageUpload}
       />
     </>
   );

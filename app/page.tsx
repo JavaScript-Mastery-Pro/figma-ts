@@ -55,10 +55,13 @@ function Home() {
 
   const syncShapeInStorage = useMutation(({ storage }, object) => {
     if (!object) return;
-    const { objectId } = object;
+    const { objectId, customSelected } = object;
+
+    console.log({ object });
 
     const shapeData = object.toJSON();
     shapeData.objectId = objectId;
+    shapeData.customSelected = customSelected;
 
     const canvasObjects = storage.get("canvasObjects");
     canvasObjects.set(objectId, shapeData);
@@ -81,7 +84,7 @@ function Home() {
   const isDrawing = useRef(false);
   const shapeRef = useRef<any>(null);
   const selectedShapeRef = useRef<string | null>(null);
-  const activeObjectsRef = useRef<any>([]);
+  const activeObjectRef = useRef<any>([]);
 
   const [activeElement, setActiveElement] = useState<{
     name: string;
@@ -93,6 +96,7 @@ function Home() {
     icon: "",
   });
 
+  const isEditingRef = useRef(false);
   const [elementAttributes, setElementAttributes] = useState({
     width: "",
     height: "",
@@ -391,6 +395,7 @@ function Home() {
       syncShapeInStorage(shapeRef.current);
 
       shapeRef.current = null;
+      activeObjectRef.current = null;
       if (selectedShapeRef.current !== "freeform") {
         // canvas.isDrawingMode = false;
         selectedShapeRef.current = null;
@@ -475,7 +480,7 @@ function Home() {
       canvas.dispose();
       window.removeEventListener("resize", handleResize);
     };
-  }, [canvasRef.current]);
+  }, [canvasRef]);
 
   useEffect(() => {
     fabricRef.current?.clear();
@@ -483,14 +488,18 @@ function Home() {
     Array.from(canvasObjects, ([objectId, objectData]) => {
       fabric.util.enlivenObjects([objectData], (enlivenedObjects) => {
         enlivenedObjects.forEach((enlivenedObj) => {
+          // check if the enlivened object has same objectId as the one in activeObjectRef
+          if (activeObjectRef.current?.objectId === objectId) {
+            // if it does, then set the element as selected
+            fabricRef.current?.setActiveObject(enlivenedObj);
+          }
+
           fabricRef.current?.add(enlivenedObj);
         });
       });
-
-      fabricRef.current?.renderAll();
     });
 
-    getShapes();
+    fabricRef.current?.renderAll();
   }, [canvasObjects]);
 
   return (
@@ -508,12 +517,13 @@ function Home() {
           style={{
             cursor: cursorState.mode === CursorMode.Chat ? "none" : "auto",
           }}
+          id="canvas"
           onPointerMove={handlePointerMove}
           onPointerLeave={handlePointerLeave}
           onPointerDown={handlePointerDown}
           onPointerUp={handlePointerUp}
         >
-          <canvas className="" id="canvas" ref={canvasRef} />
+          <canvas ref={canvasRef} />
 
           {reactions.map((reaction) => (
             <FlyingReaction
@@ -550,6 +560,7 @@ function Home() {
           elementAttributes={elementAttributes}
           setElementAttributes={setElementAttributes}
           fabricRef={fabricRef}
+          activeObjectRef={activeObjectRef}
           syncShapeInStorage={syncShapeInStorage}
         />
       </section>
