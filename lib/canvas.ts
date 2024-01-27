@@ -308,3 +308,11 @@ export const renderCanvas = ({
 
   fabricRef.current?.renderAll();
 };
+
+export const handleResize = ({ canvas }: { canvas: fabric.Canvas | null }) => {
+  const canvasElement = document.getElementById("canvas");
+
+  canvas?.setWidth(canvasElement?.clientWidth || 0);
+  canvas?.setHeight(canvasElement?.clientHeight || 0);
+  canvas?.renderAll();
+};

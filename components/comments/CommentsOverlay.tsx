@@ -241,10 +241,6 @@ function OverlayThread({
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
         onFocus={handleIncreaseZIndex}
-        // onPointerDown={() => {}}
-        // onPointerMove={() => {}}
-        // onPointerUp={() => {}}
-        // onFocus={() => {}}
       />
     </div>
   );

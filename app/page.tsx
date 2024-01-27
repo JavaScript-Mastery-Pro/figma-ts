@@ -1,37 +1,9 @@
 "use client";
 
 import { fabric } from "fabric";
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
+import { useMutation, useStorage } from "@/liveblocks.config";
 
-import {
-  useBroadcastEvent,
-  useEventListener,
-  useMutation,
-  useMyPresence,
-  useOthers,
-  useStorage,
-} from "../liveblocks.config";
-
-import CursorChat from "@/components/cursor/CursorChat";
-
-import {
-  Attributes,
-  CursorMode,
-  CursorState,
-  Reaction,
-  ReactionEvent,
-} from "@/types/type";
-
-import { handleDelete } from "@/lib/key-events";
-import useInterval from "@/hooks/useInterval";
-import {
-  Navbar,
-  LeftSidebar,
-  FlyingReaction,
-  ReactionSelector,
-  LiveCursors,
-  RightSidebar,
-} from "@/components/index";
 import {
   getShapes,
   handleCanvasMouseDown,
@@ -41,16 +13,43 @@ import {
   handleCanvasObjectScaling,
   handleCanvasSelectionCreated,
   handleCanvaseMouseMove,
+  handleResize,
   initializeFabric,
   renderCanvas,
 } from "@/lib/canvas";
+import { handleDelete } from "@/lib/key-events";
+import { Navbar, LeftSidebar, RightSidebar, Live } from "@/components/index";
+
+import { ActiveElement, Attributes } from "@/types/type";
 
 function Home() {
-  const others = useOthers();
-  const [{ cursor }, updateMyPresence] = useMyPresence() as any;
-  const broadcast = useBroadcastEvent();
-
   const canvasObjects = useStorage((root) => root.canvasObjects);
+
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const fabricRef = useRef<fabric.Canvas | null>(null);
+
+  const allShapes = useRef<any>([]);
+
+  const isDrawing = useRef(false);
+  const shapeRef = useRef<any>(null);
+  const selectedShapeRef = useRef<string | null>(null);
+  const activeObjectRef = useRef<any>([]);
+
+  const [activeElement, setActiveElement] = useState<ActiveElement>({
+    name: "",
+    value: "",
+    icon: "",
+  });
+
+  const [elementAttributes, setElementAttributes] = useState<Attributes>({
+    width: "",
+    height: "",
+    fontSize: "",
+    fontFamily: "",
+    fontWeight: "",
+    fill: "#aabbcc",
+    stroke: "#aabbcc",
+  });
 
   const deleteShapeFromStorage = useMutation(({ storage }, shapeId) => {
     const canvasObjects = storage.get("canvasObjects");
@@ -79,171 +78,6 @@ function Home() {
     const canvasObjects = storage.get("canvasObjects");
     canvasObjects.set(objectId, shapeData);
   }, []);
-
-  const [reactions, setReactions] = useState<Reaction[]>([]);
-  const [cursorState, setCursorState] = useState<CursorState>({
-    mode: CursorMode.Hidden,
-  });
-
-  const setReaction = useCallback((reaction: string) => {
-    setCursorState({ mode: CursorMode.Reaction, reaction, isPressed: false });
-  }, []);
-
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const fabricRef = useRef<fabric.Canvas | null>(null);
-
-  const allShapes = useRef<any>([]);
-
-  const isDrawing = useRef(false);
-  const shapeRef = useRef<any>(null);
-  const selectedShapeRef = useRef<string | null>(null);
-  const activeObjectRef = useRef<any>([]);
-
-  const [activeElement, setActiveElement] = useState<{
-    name: string;
-    value: string;
-    icon: string;
-  } | null>({
-    name: "",
-    value: "",
-    icon: "",
-  });
-
-  const [elementAttributes, setElementAttributes] = useState<Attributes>({
-    width: "",
-    height: "",
-    fontSize: "",
-    fontFamily: "",
-    fontWeight: "",
-    fill: "#aabbcc",
-    stroke: "#aabbcc",
-  });
-
-  // Remove reactions that are not visible anymore (every 1 sec)
-  useInterval(() => {
-    setReactions((reactions) =>
-      reactions.filter((reaction) => reaction.timestamp > Date.now() - 4000)
-    );
-  }, 1000);
-
-  useInterval(() => {
-    if (
-      cursorState.mode === CursorMode.Reaction &&
-      cursorState.isPressed &&
-      cursor
-    ) {
-      setReactions((reactions) =>
-        reactions.concat([
-          {
-            point: { x: cursor.x, y: cursor.y },
-            value: cursorState.reaction,
-            timestamp: Date.now(),
-          },
-        ])
-      );
-      broadcast({
-        x: cursor.x,
-        y: cursor.y,
-        value: cursorState.reaction,
-      });
-    }
-  }, 100);
-
-  useEventListener((eventData) => {
-    const event = eventData.event as ReactionEvent;
-    setReactions((reactions) =>
-      reactions.concat([
-        {
-          point: { x: event.x, y: event.y },
-          value: event.value,
-          timestamp: Date.now(),
-        },
-      ])
-    );
-  });
-
-  useEffect(() => {
-    function onKeyUp(e: KeyboardEvent) {
-      if (e.key === "/") {
-        setCursorState({
-          mode: CursorMode.Chat,
-          previousMessage: null,
-          message: "",
-        });
-      } else if (e.key === "Escape") {
-        updateMyPresence({ message: "" });
-        setCursorState({ mode: CursorMode.Hidden });
-      } else if (e.key === "e") {
-        setCursorState({ mode: CursorMode.ReactionSelector });
-      }
-    }
-
-    function onKeyDown(e: KeyboardEvent) {
-      if (e.key === "/") {
-        e.preventDefault();
-      }
-    }
-
-    window.addEventListener("keyup", onKeyUp);
-    window.addEventListener("keydown", onKeyDown);
-
-    return () => {
-      window.removeEventListener("keyup", onKeyUp);
-      window.removeEventListener("keydown", onKeyDown);
-    };
-  }, [updateMyPresence]);
-
-  const handlePointerMove = (event: React.PointerEvent) => {
-    event.preventDefault();
-    if (cursor == null || cursorState.mode !== CursorMode.ReactionSelector) {
-      // get the cursor position in the canvas
-      const x = event.clientX - event.currentTarget.getBoundingClientRect().x;
-      const y = event.clientY - event.currentTarget.getBoundingClientRect().y;
-
-      updateMyPresence({
-        cursor: {
-          x,
-          y,
-        },
-      });
-    }
-  };
-
-  const handlePointerLeave = () => {
-    setCursorState({
-      mode: CursorMode.Hidden,
-    });
-    updateMyPresence({
-      cursor: null,
-      message: null,
-    });
-  };
-
-  const handlePointerDown = (event: React.PointerEvent) => {
-    // get the cursor position in the canvas
-    const x = event.clientX - event.currentTarget.getBoundingClientRect().x;
-    const y = event.clientY - event.currentTarget.getBoundingClientRect().y;
-
-    updateMyPresence({
-      cursor: {
-        x,
-        y,
-      },
-    });
-    setCursorState((state: CursorState) =>
-      cursorState.mode === CursorMode.Reaction
-        ? { ...state, isPressed: true }
-        : state
-    );
-  };
-
-  const handlePointerUp = () => {
-    setCursorState((state: CursorState) =>
-      cursorState.mode === CursorMode.Reaction
-        ? { ...state, isPressed: false }
-        : state
-    );
-  };
 
   const handleActiveElement = (elem: any) => {
     setActiveElement(elem);
@@ -282,15 +116,6 @@ function Home() {
     } else {
       selectedShapeRef.current = "";
     }
-  };
-
-  const handleResize = () => {
-    const canvasElement = document.getElementById("canvas");
-
-    const canvas = fabricRef.current;
-    canvas?.setWidth(canvasElement?.clientWidth || 0);
-    canvas?.setHeight(canvasElement?.clientHeight || 0);
-    canvas?.renderAll();
   };
 
   useEffect(() => {
@@ -360,11 +185,19 @@ function Home() {
       });
     });
 
-    window.addEventListener("resize", handleResize);
+    window.addEventListener("resize", () => {
+      handleResize({
+        canvas,
+      });
+    });
 
     return () => {
       canvas.dispose();
-      window.removeEventListener("resize", handleResize);
+      window.removeEventListener("resize", () => {
+        handleResize({
+          canvas,
+        });
+      });
     };
   }, [canvasRef]);
 
@@ -386,49 +219,9 @@ function Home() {
       <section className="flex flex-row h-full">
         <LeftSidebar allShapes={allShapes} />
 
-        <div
-          className="relative flex flex-1 w-full h-full items-center justify-center overflow-scroll"
-          style={{
-            cursor: cursorState.mode === CursorMode.Chat ? "none" : "auto",
-          }}
-          id="canvas"
-          onPointerMove={handlePointerMove}
-          onPointerLeave={handlePointerLeave}
-          onPointerDown={handlePointerDown}
-          onPointerUp={handlePointerUp}
-        >
+        <Live>
           <canvas ref={canvasRef} />
-
-          {reactions.map((reaction) => (
-            <FlyingReaction
-              key={reaction.timestamp.toString()}
-              x={reaction.point.x}
-              y={reaction.point.y}
-              timestamp={reaction.timestamp}
-              value={reaction.value}
-            />
-          ))}
-
-          {cursor && (
-            <CursorChat
-              cursor={cursor}
-              cursorState={cursorState}
-              setCursorState={setCursorState}
-              updateMyPresence={updateMyPresence}
-            />
-          )}
-
-          {cursorState.mode === CursorMode.ReactionSelector && (
-            <ReactionSelector
-              setReaction={(reaction) => {
-                setReaction(reaction);
-              }}
-            />
-          )}
-
-          <LiveCursors others={others} />
-          {/* <Comments /> */}
-        </div>
+        </Live>
 
         <RightSidebar
           elementAttributes={elementAttributes}
