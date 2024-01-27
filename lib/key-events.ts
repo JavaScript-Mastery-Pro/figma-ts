@@ -14,7 +14,7 @@ export const handleCopy = (canvas) => {
   return activeObjects;
 };
 
-export const handlePaste = (canvas) => {
+export const handlePaste = (canvas, syncShapeInStorage) => {
   if (!canvas || !(canvas instanceof fabric.Canvas)) {
     console.error("Invalid canvas object. Aborting paste operation.");
     return;
@@ -38,6 +38,7 @@ export const handlePaste = (canvas) => {
               fill: "#aabbcc",
             });
             canvas.add(enlivenedObj);
+            syncShapeInStorage(enlivenedObj);
           });
           canvas.renderAll();
         });
@@ -50,11 +51,13 @@ export const handlePaste = (canvas) => {
 
 export const handleDelete = (canvas, deleteShapeFromStorage) => {
   const activeObjects = canvas.getActiveObjects();
+  if (!activeObjects || activeObjects.length === 0) return;
 
   if (activeObjects.length > 0) {
     activeObjects.forEach((obj) => {
-      deleteShapeFromStorage(obj.objectId);
+      if (!obj.objectId) return;
       canvas.remove(obj);
+      deleteShapeFromStorage(obj.objectId);
     });
   }
 
@@ -68,6 +71,7 @@ export const handleKeyDown = (
   canvas,
   undo,
   redo,
+  syncShapeInStorage,
   deleteShapeFromStorage
 ) => {
   // Check if the key pressed is ctrl/cmd + c (copy)
@@ -77,7 +81,7 @@ export const handleKeyDown = (
 
   // Check if the key pressed is ctrl/cmd + v (paste)
   if ((e.ctrlKey || e.metaKey) && e.keyCode === 86) {
-    handlePaste(canvas);
+    handlePaste(canvas, syncShapeInStorage);
   }
 
   // Check if the key pressed is delete/backspace (delete)

@@ -5,7 +5,6 @@ import { useState, useEffect, useRef } from "react";
 import { useMutation, useRedo, useStorage, useUndo } from "@/liveblocks.config";
 
 import {
-  getShapes,
   handleCanvasMouseDown,
   handleCanvasMouseUp,
   handleCanvasObjectModified,
@@ -29,8 +28,6 @@ function Home() {
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const fabricRef = useRef<fabric.Canvas | null>(null);
-
-  const allShapes = useRef<any>([]);
 
   const isDrawing = useRef(false);
   const shapeRef = useRef<any>(null);
@@ -95,11 +92,6 @@ function Home() {
           value: "select",
           icon: "/assets/icons/select.svg",
         });
-
-        getShapes({
-          canvas: fabricRef.current,
-          allShapes,
-        });
       }
 
       if (elem.value === "delete") {
@@ -108,11 +100,6 @@ function Home() {
           name: "Select",
           value: "select",
           icon: "/assets/icons/select.svg",
-        });
-
-        getShapes({
-          canvas: fabricRef.current,
-          allShapes,
         });
       }
     } else {
@@ -152,7 +139,6 @@ function Home() {
         canvas,
         isDrawing,
         shapeRef,
-        allShapes,
         activeObjectRef,
         selectedShapeRef,
         syncShapeInStorage,
@@ -193,7 +179,14 @@ function Home() {
       });
     });
     window.addEventListener("keydown", (e) =>
-      handleKeyDown(e, canvas, undo, redo, deleteShapeFromStorage)
+      handleKeyDown(
+        e,
+        fabricRef.current,
+        undo,
+        redo,
+        syncShapeInStorage,
+        deleteShapeFromStorage
+      )
     );
 
     return () => {
@@ -206,7 +199,14 @@ function Home() {
       });
 
       window.removeEventListener("keydown", (e) =>
-        handleKeyDown(e, canvas, undo, redo, deleteShapeFromStorage)
+        handleKeyDown(
+          e,
+          fabricRef.current,
+          undo,
+          redo,
+          syncShapeInStorage,
+          deleteShapeFromStorage
+        )
       );
     };
   }, [canvasRef]);
@@ -227,7 +227,7 @@ function Home() {
       />
 
       <section className="flex flex-row h-full">
-        <LeftSidebar allShapes={allShapes} />
+        <LeftSidebar allShapes={Array.from(canvasObjects)} />
 
         <Live canvasRef={canvasRef} />
 

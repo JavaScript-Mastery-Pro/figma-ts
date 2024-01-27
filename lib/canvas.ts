@@ -21,31 +21,6 @@ export const initializeFabric = ({
   return canvas;
 };
 
-export const getShapes = ({
-  canvas,
-  allShapes,
-}: {
-  canvas: fabric.Canvas | null;
-  allShapes: React.MutableRefObject<any[]>;
-}) => {
-  if (!canvas) return;
-
-  const shapes = canvas?.getObjects() || [];
-
-  const shapesData = shapes.map((shape) => ({
-    type: shape.type || "",
-    width: shape.width || 0,
-    height: shape.height || 0,
-    fill: shape.fill || "",
-    left: shape.left || 0,
-    top: shape.top || 0,
-    // @ts-ignore
-    objectId: shape?.objectId,
-  }));
-
-  allShapes.current = shapesData;
-};
-
 export const handleCanvasMouseDown = ({
   options,
   canvas,
@@ -153,7 +128,6 @@ export const handleCanvasMouseUp = ({
   canvas,
   isDrawing,
   shapeRef,
-  allShapes,
   activeObjectRef,
   selectedShapeRef,
   syncShapeInStorage,
@@ -162,7 +136,6 @@ export const handleCanvasMouseUp = ({
   canvas: fabric.Canvas;
   isDrawing: React.MutableRefObject<boolean>;
   shapeRef: any;
-  allShapes: React.MutableRefObject<any[]>;
   activeObjectRef: React.MutableRefObject<fabric.Object | null>;
   selectedShapeRef: any;
   syncShapeInStorage: (shape: fabric.Object) => void;
@@ -177,11 +150,6 @@ export const handleCanvasMouseUp = ({
   if (selectedShapeRef.current !== "freeform") {
     selectedShapeRef.current = null;
   }
-
-  getShapes({
-    canvas,
-    allShapes,
-  });
 
   if (!canvas.isDrawingMode) {
     setTimeout(() => {
@@ -316,7 +284,11 @@ export const handleResize = ({
 }) => {
   const canvasElement = document.getElementById("canvas");
 
+  if (!canvasElement) return;
+
   const canvas = fabricRef.current;
+
+  if (!canvas) return;
 
   canvas?.setWidth(canvasElement?.clientWidth || 0);
   canvas?.setHeight(canvasElement?.clientHeight || 0);
