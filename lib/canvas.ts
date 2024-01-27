@@ -299,10 +299,10 @@ export const handleCanvasZoom = ({
   options,
   canvas,
 }: {
-  options: fabric.IEvent;
+  options: fabric.IEvent & { e: WheelEvent };
   canvas: fabric.Canvas;
 }) => {
-  const delta = options.e.deltaY;
+  const delta = options.e?.deltaY;
   let zoom = canvas.getZoom();
 
   // allow zooming to min 20% and max 100%

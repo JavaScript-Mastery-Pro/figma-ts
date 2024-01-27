@@ -66,9 +66,9 @@ export const navElements = [
   },
 ];
 
-export const groupingOptions = [
-  { value: "group", label: "Group", icon: "/assets/group.svg" },
-  { value: "ungroup", label: "Ungroup", icon: "/assets/ungroup.svg" },
+export const directionOptions = [
+  { label: "Bring to Front", value: "front", icon: "/assets/group.svg" },
+  { label: "Send to Back", value: "back", icon: "/assets/ungroup.svg" },
 ];
 
 export const fontFamilyOptions = [

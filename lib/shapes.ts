@@ -119,8 +119,6 @@ export const modifyShape = (
 
   if (!selectedElement || selectedElement?.type === "activeSelection") return;
 
-  console.log("modify shape", selectedElement[property], value);
-
   // if property is width or height, we need to use scaleToWidth or scaleToHeight
   if (property === "width") {
     selectedElement.scaleToWidth(value);
@@ -136,6 +134,27 @@ export const modifyShape = (
   activeObjectRef.current = selectedElement;
 
   canvas.requestRenderAll();
+
+  syncShapeInStorage(selectedElement);
+};
+
+export const bringElement = ({
+  canvas,
+  direction,
+  activeObjectRef,
+  syncShapeInStorage,
+}) => {
+  // get the selected element. If there is no selected element or there are more than one selected element, return
+  const selectedElement = canvas.getActiveObject();
+
+  if (!selectedElement || selectedElement?.type === "activeSelection") return;
+
+  // bring the selected element to the front
+  if (direction === "front") {
+    canvas.bringToFront(selectedElement);
+  } else if (direction === "back") {
+    canvas.sendToBack(selectedElement);
+  }
 
   syncShapeInStorage(selectedElement);
 };

@@ -3,11 +3,11 @@ import React, { memo, useMemo, useRef } from "react";
 import Text from "./settings/Text";
 import Color from "./settings/Color";
 import Export from "./settings/Export";
-import Groups from "./settings/Groups";
+import Direction from "./settings/Direction";
 import Alignment from "./settings/Alignment";
 import Dimensions from "./settings/Dimensions";
 
-import { modifyShape } from "@/lib/shapes";
+import { bringElement, modifyShape } from "@/lib/shapes";
 import { Attributes } from "@/types/type";
 
 type Props = {
@@ -44,6 +44,18 @@ function RightSidebar({
     []
   );
 
+  const handleElemDirection = useMemo(
+    () => (direction: string) => {
+      bringElement({
+        canvas: fabricRef.current,
+        direction,
+        activeObjectRef,
+        syncShapeInStorage,
+      });
+    },
+    []
+  );
+
   const memoizedContent = useMemo(() => {
     return (
       <section className="flex flex-col border-t border-primary-grey-200 bg-primary-black text-primary-grey-300 min-w-[227px] sticky right-0 h-full max-sm:hidden select-none">
@@ -53,7 +65,7 @@ function RightSidebar({
 
         <Alignment />
 
-        <Groups />
+        <Direction handleElemDirection={handleElemDirection} />
 
         <Dimensions
           width={elementAttributes.width}
