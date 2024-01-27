@@ -81,7 +81,15 @@ function ShapesMenu({ item, activeElement, handleActiveElement }: Props) {
                   {elem.name}
                 </p>
               </div>
-              <p className="capitalize">{elem.value[0]}</p>
+              <p
+                className={`capitalize text-sm  ${
+                  activeElement.value === elem.value
+                    ? "text-primary-black"
+                    : "text-white"
+                }`}
+              >
+                {elem.value[0]}
+              </p>
             </Button>
           ))}
         </DropdownMenuContent>
