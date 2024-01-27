@@ -49,7 +49,10 @@ function Navbar({
               />
             ) : item?.value === "comments" ? (
               <NewThread>
-                <Button className="relative w-5 h-5 object-contain">
+                <Button
+                  className="relative w-5 h-5 object-contain"
+                  onClick={() => handleActiveElement(item)}
+                >
                   <Image
                     src={item.icon}
                     alt={item.name}

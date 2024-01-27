@@ -294,3 +294,25 @@ export const handleResize = ({
   canvas?.setHeight(canvasElement?.clientHeight || 0);
   canvas?.renderAll();
 };
+
+export const handleCanvasZoom = ({
+  options,
+  canvas,
+}: {
+  options: fabric.IEvent;
+  canvas: fabric.Canvas;
+}) => {
+  const delta = options.e.deltaY;
+  let zoom = canvas.getZoom();
+
+  // allow zooming to min 20% and max 100%
+  const minZoom = 0.2;
+  const maxZoom = 1;
+  const zoomStep = 0.001;
+
+  zoom = Math.min(Math.max(minZoom, zoom + delta * zoomStep), maxZoom);
+
+  canvas.zoomToPoint({ x: options.e.offsetX, y: options.e.offsetY }, zoom);
+  options.e.preventDefault();
+  options.e.stopPropagation();
+};

@@ -11,6 +11,7 @@ import {
   handleCanvasObjectMoving,
   handleCanvasObjectScaling,
   handleCanvasSelectionCreated,
+  handleCanvasZoom,
   handleCanvaseMouseMove,
   handleResize,
   initializeFabric,
@@ -173,11 +174,19 @@ function Home() {
       });
     });
 
+    canvas.on("mouse:wheel", (options) => {
+      handleCanvasZoom({
+        options,
+        canvas,
+      });
+    });
+
     window.addEventListener("resize", () => {
       handleResize({
         fabricRef,
       });
     });
+
     window.addEventListener("keydown", (e) =>
       handleKeyDown(
         e,
