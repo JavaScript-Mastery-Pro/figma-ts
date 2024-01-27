@@ -106,9 +106,37 @@ function Live({ children }: { children: React.ReactNode }) {
     };
   }, [updateMyPresence]);
 
-  const handlePointerMove = (event: React.PointerEvent) => {
-    event.preventDefault();
-    if (cursor == null || cursorState.mode !== CursorMode.ReactionSelector) {
+  const handlePointerMove = useCallback(
+    (event: React.PointerEvent) => {
+      event.preventDefault();
+      if (cursor == null || cursorState.mode !== CursorMode.ReactionSelector) {
+        // get the cursor position in the canvas
+        const x = event.clientX - event.currentTarget.getBoundingClientRect().x;
+        const y = event.clientY - event.currentTarget.getBoundingClientRect().y;
+
+        updateMyPresence({
+          cursor: {
+            x,
+            y,
+          },
+        });
+      }
+    },
+    [cursor, cursorState.mode, updateMyPresence]
+  );
+
+  const handlePointerLeave = useCallback(() => {
+    setCursorState({
+      mode: CursorMode.Hidden,
+    });
+    updateMyPresence({
+      cursor: null,
+      message: null,
+    });
+  }, [updateMyPresence]);
+
+  const handlePointerDown = useCallback(
+    (event: React.PointerEvent) => {
       // get the cursor position in the canvas
       const x = event.clientX - event.currentTarget.getBoundingClientRect().x;
       const y = event.clientY - event.currentTarget.getBoundingClientRect().y;
@@ -119,44 +147,22 @@ function Live({ children }: { children: React.ReactNode }) {
           y,
         },
       });
-    }
-  };
+      setCursorState((state: CursorState) =>
+        cursorState.mode === CursorMode.Reaction
+          ? { ...state, isPressed: true }
+          : state
+      );
+    },
+    [cursorState.mode, setCursorState]
+  );
 
-  const handlePointerLeave = () => {
-    setCursorState({
-      mode: CursorMode.Hidden,
-    });
-    updateMyPresence({
-      cursor: null,
-      message: null,
-    });
-  };
-
-  const handlePointerDown = (event: React.PointerEvent) => {
-    // get the cursor position in the canvas
-    const x = event.clientX - event.currentTarget.getBoundingClientRect().x;
-    const y = event.clientY - event.currentTarget.getBoundingClientRect().y;
-
-    updateMyPresence({
-      cursor: {
-        x,
-        y,
-      },
-    });
-    setCursorState((state: CursorState) =>
-      cursorState.mode === CursorMode.Reaction
-        ? { ...state, isPressed: true }
-        : state
-    );
-  };
-
-  const handlePointerUp = () => {
+  const handlePointerUp = useCallback(() => {
     setCursorState((state: CursorState) =>
       cursorState.mode === CursorMode.Reaction
         ? { ...state, isPressed: false }
         : state
     );
-  };
+  }, [cursorState.mode, setCursorState]);
 
   return (
     <div
