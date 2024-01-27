@@ -309,8 +309,14 @@ export const renderCanvas = ({
   fabricRef.current?.renderAll();
 };
 
-export const handleResize = ({ canvas }: { canvas: fabric.Canvas | null }) => {
+export const handleResize = ({
+  fabricRef,
+}: {
+  fabricRef: React.MutableRefObject<fabric.Canvas | null>;
+}) => {
   const canvasElement = document.getElementById("canvas");
+
+  const canvas = fabricRef.current;
 
   canvas?.setWidth(canvasElement?.clientWidth || 0);
   canvas?.setHeight(canvasElement?.clientHeight || 0);

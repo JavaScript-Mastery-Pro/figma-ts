@@ -187,7 +187,7 @@ function Home() {
 
     window.addEventListener("resize", () => {
       handleResize({
-        canvas,
+        fabricRef,
       });
     });
 
@@ -195,7 +195,7 @@ function Home() {
       canvas.dispose();
       window.removeEventListener("resize", () => {
         handleResize({
-          canvas,
+          fabricRef,
         });
       });
     };

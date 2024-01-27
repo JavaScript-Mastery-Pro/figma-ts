@@ -106,24 +106,21 @@ function Live({ children }: { children: React.ReactNode }) {
     };
   }, [updateMyPresence]);
 
-  const handlePointerMove = useCallback(
-    (event: React.PointerEvent) => {
-      event.preventDefault();
-      if (cursor == null || cursorState.mode !== CursorMode.ReactionSelector) {
-        // get the cursor position in the canvas
-        const x = event.clientX - event.currentTarget.getBoundingClientRect().x;
-        const y = event.clientY - event.currentTarget.getBoundingClientRect().y;
+  const handlePointerMove = useCallback((event: React.PointerEvent) => {
+    event.preventDefault();
+    if (cursor == null || cursorState.mode !== CursorMode.ReactionSelector) {
+      // get the cursor position in the canvas
+      const x = event.clientX - event.currentTarget.getBoundingClientRect().x;
+      const y = event.clientY - event.currentTarget.getBoundingClientRect().y;
 
-        updateMyPresence({
-          cursor: {
-            x,
-            y,
-          },
-        });
-      }
-    },
-    [cursor, cursorState.mode, updateMyPresence]
-  );
+      updateMyPresence({
+        cursor: {
+          x,
+          y,
+        },
+      });
+    }
+  }, []);
 
   const handlePointerLeave = useCallback(() => {
     setCursorState({
@@ -133,7 +130,7 @@ function Live({ children }: { children: React.ReactNode }) {
       cursor: null,
       message: null,
     });
-  }, [updateMyPresence]);
+  }, []);
 
   const handlePointerDown = useCallback(
     (event: React.PointerEvent) => {

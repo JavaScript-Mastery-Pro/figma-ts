@@ -63,7 +63,7 @@ function OverlayThread({
     y: -10000,
   });
 
-  //   Update thread when another user edits, and update coords when page resizes
+  //  Update thread when another user edits, and update coords when page resizes
   useEffect(() => {
     if (draggingRef.current) {
       return;
