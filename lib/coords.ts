@@ -1,9 +1,6 @@
-import { AccurateCursorPositions, DragOffset } from "@/liveblocks.config";
-
-export function getCoordsFromPointerEvent<El>(
-  e: PointerEvent,
-  dragOffset: DragOffset = { x: 0, y: 0 }
-): AccurateCursorPositions | null {
+export function getCoordsFromPointerEvent<El>(e: PointerEvent): {
+  cursorSelectors: string[];
+} | null {
   if (!e.target || !(e.target as any)?.getBoundingClientRect) {
     return null;
   }
@@ -22,39 +19,6 @@ export function getCoordsFromPointerEvent<El>(
 
   return {
     cursorSelectors,
-  };
-}
-
-export function getCoordsFromElement<El>(
-  target: Element,
-  clientX: number,
-  clientY: number,
-  dragOffset: DragOffset = { x: 0, y: 0 }
-): AccurateCursorPositions | null {
-  if (!(target instanceof Element)) {
-    return null;
-  }
-
-  // Get all parent elements
-  const pathArray: Element[] = composedPathForElement(target);
-
-  // Generate a set of CSS selectors using the path
-  const cursorSelectors = generateSelectors(pathArray);
-
-  // Don't show cursor
-  if (!cursorSelectors) {
-    return null;
-  }
-
-  // Get percentage across current element
-  const { top, left, width, height } = target.getBoundingClientRect();
-  const xPercent = (clientX - left - dragOffset.x) / width;
-  const yPercent = (clientY - top - dragOffset.y) / height;
-
-  return {
-    cursorSelectors,
-    cursorX: xPercent,
-    cursorY: yPercent,
   };
 }
 
@@ -135,61 +99,4 @@ function generateSelectors(pathArray: Element[]): string[] | null {
   return [id, nthChildPathFromLowestId, nthChildPath, classNamePath].filter(
     (selector) => selector
   );
-}
-
-export function getCoordsFromAccurateCursorPositions({
-  cursorSelectors,
-  cursorX,
-  cursorY,
-}: AccurateCursorPositions) {
-  if (typeof window === "undefined") {
-    return null;
-  }
-
-  for (const selector of cursorSelectors) {
-    if (selector) {
-      try {
-        const el = document.querySelector(selector);
-
-        // If element exists and is visible
-        if (el && el.getClientRects().length) {
-          const { top, left, width, height } = el.getBoundingClientRect();
-          return {
-            x: left + width * cursorX + window.scrollX,
-            y: top + height * cursorY + window.scrollY,
-          };
-        }
-      } catch (err) {
-        // Ignore errors if selectors don't work, and don't render cursors
-      }
-    }
-  }
-
-  return null;
-}
-
-export function getElementBeneath(
-  el: HTMLElement,
-  clientX: number,
-  clientY: number
-): Element | null {
-  const prevPointerEvents = el.style.pointerEvents;
-  el.style.pointerEvents = "none";
-  const beneathElement = document.elementFromPoint(clientX, clientY);
-  el.style.pointerEvents = prevPointerEvents;
-  return beneathElement;
-}
-
-export function composedPathForElement(
-  element: Element | EventTarget
-): Array<Element> {
-  const path: Array<Element> = [];
-
-  let currentElement: Element | null = element as Element;
-  while (currentElement) {
-    path.push(currentElement);
-    currentElement = currentElement.parentElement;
-  }
-
-  return path;
 }
