@@ -11,6 +11,24 @@ function NewThreadCursor({ display }: { display: boolean }) {
 
   useEffect(() => {
     const updatePosition = (e: MouseEvent) => {
+      const canvas = document.getElementById("canvas");
+
+      if (canvas) {
+        const canvasRect = canvas.getBoundingClientRect();
+        if (
+          e.clientX < canvasRect.left ||
+          e.clientX > canvasRect.right ||
+          e.clientY < canvasRect.top ||
+          e.clientY > canvasRect.bottom
+        ) {
+          setCoords({
+            x: -10000,
+            y: -10000,
+          });
+          return;
+        }
+      }
+
       setCoords({
         x: e.clientX,
         y: e.clientY,

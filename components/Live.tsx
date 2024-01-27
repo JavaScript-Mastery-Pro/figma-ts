@@ -10,13 +10,14 @@ import { useCallback, useEffect, useState } from "react";
 
 import {
   FlyingReaction,
-  LiveCursors,
   ReactionSelector,
   CursorChat,
+  LiveCursors,
 } from "./index";
 import useInterval from "@/hooks/useInterval";
 
 import { CursorMode, CursorState, Reaction, ReactionEvent } from "@/types/type";
+import { Comments } from "./comments/Comments";
 
 function Live({ canvasRef }: { canvasRef: any }) {
   const others = useOthers();
@@ -163,7 +164,7 @@ function Live({ canvasRef }: { canvasRef: any }) {
 
   return (
     <div
-      className="relative flex flex-1 w-full h-full items-center justify-center overflow-scroll"
+      className="relative flex flex-1 w-full h-full items-center justify-center"
       style={{
         cursor: cursorState.mode === CursorMode.Chat ? "none" : "auto",
       }}
@@ -203,7 +204,7 @@ function Live({ canvasRef }: { canvasRef: any }) {
       )}
 
       <LiveCursors others={others} />
-      {/* <Comments /> */}
+      <Comments />
     </div>
   );
 }

@@ -8,8 +8,6 @@ export function getCoordsFromPointerEvent<El>(
     return null;
   }
 
-  const target = e.target as HTMLElement;
-
   // Get all parent elements
   const pathArray: HTMLElement[] =
     (e as any)._savedComposedPath || e.composedPath() || (e as any).path;
@@ -22,15 +20,8 @@ export function getCoordsFromPointerEvent<El>(
     return null;
   }
 
-  // Get percentage across current element
-  const { width, height } = target.getBoundingClientRect();
-  const xPercent = (e.offsetX - dragOffset.x) / width;
-  const yPercent = (e.offsetY - dragOffset.y) / height;
-
   return {
     cursorSelectors,
-    cursorX: xPercent,
-    cursorY: yPercent,
   };
 }
 

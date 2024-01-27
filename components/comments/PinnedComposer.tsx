@@ -1,31 +1,16 @@
 "use client";
 
 import Image from "next/image";
-import { PointerEventHandler } from "react";
 import { Composer, ComposerProps } from "@liveblocks/react-comments";
 
 type Props = {
-  onPointerDown: PointerEventHandler<HTMLDivElement>;
-  onPointerMove: PointerEventHandler<HTMLDivElement>;
-  onPointerUp: PointerEventHandler<HTMLDivElement>;
   onComposerSubmit: ComposerProps["onComposerSubmit"];
 };
 
-function PinnedComposer({
-  onPointerDown,
-  onPointerMove,
-  onPointerUp,
-  onComposerSubmit,
-  ...props
-}: Props) {
+function PinnedComposer({ onComposerSubmit, ...props }: Props) {
   return (
     <div className="absolute flex gap-4" {...props}>
-      <div
-        className="select-none relative w-9 h-9 shadow rounded-tl-md rounded-tr-full rounded-br-full rounded-bl-full bg-white flex justify-center items-center"
-        onPointerDown={onPointerDown}
-        onPointerMove={onPointerMove}
-        onPointerUp={onPointerUp}
-      >
+      <div className="select-none relative w-9 h-9 shadow rounded-tl-md rounded-tr-full rounded-br-full rounded-bl-full bg-white flex justify-center items-center">
         <Image
           src={`https://liveblocks.io/avatars/avatar-${Math.floor(
             Math.random() * 30
@@ -40,8 +25,8 @@ function PinnedComposer({
         <Composer
           onComposerSubmit={onComposerSubmit}
           onClick={(e) => {
-            // Don't send up a click event from emoji popout and close the composer
             e.stopPropagation();
+            e.preventDefault();
           }}
           autoFocus={true}
         />

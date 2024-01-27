@@ -6,32 +6,23 @@ import {
   useThreads,
   useUser,
 } from "@/liveblocks.config";
+import { useCallback, useRef } from "react";
 import { ThreadData } from "@liveblocks/client";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import {
-  getCoordsFromAccurateCursorPositions,
-  getCoordsFromElement,
-  getElementBeneath,
-} from "@/lib/coords";
-import { useMaxZIndex } from "@/lib/useMaxZIndex";
+
 import { PinnedThread } from "./PinnedThread";
+import { useMaxZIndex } from "@/lib/useMaxZIndex";
 
 type OverlayThreadProps = {
   thread: ThreadData<ThreadMetadata>;
   maxZIndex: number;
-  onDragChange: (dragging: boolean) => void;
 };
 
 export function CommentsOverlay() {
   const { threads } = useThreads();
-  const [beingDragged, setBeingDragged] = useState(false);
   const maxZIndex = useMaxZIndex();
 
   return (
-    <div
-      style={{ pointerEvents: beingDragged ? "none" : "auto" }}
-      data-hide-cursors
-    >
+    <div>
       {threads
         .filter((thread) => !thread.metadata.resolved)
         .map((thread) => (
@@ -39,173 +30,17 @@ export function CommentsOverlay() {
             key={thread.id}
             thread={thread}
             maxZIndex={maxZIndex}
-            onDragChange={setBeingDragged}
           />
         ))}
     </div>
   );
 }
 
-function OverlayThread({
-  thread,
-  maxZIndex,
-  onDragChange,
-}: OverlayThreadProps) {
+function OverlayThread({ thread, maxZIndex }: OverlayThreadProps) {
   const editThreadMetadata = useEditThreadMetadata();
   const { isLoading } = useUser(thread.comments[0].userId);
 
   const threadRef = useRef<HTMLDivElement>(null);
-  const draggingRef = useRef(false);
-  const dragOffset = useRef({ x: 0, y: 0 });
-  const dragStart = useRef({ x: 0, y: 0 });
-  const [coords, setCoords] = useState<{ x: number; y: number }>({
-    x: -10000,
-    y: -10000,
-  });
-
-  //  Update thread when another user edits, and update coords when page resizes
-  useEffect(() => {
-    if (draggingRef.current) {
-      return;
-    }
-
-    function updateCoords() {
-      const { cursorSelectors, cursorX, cursorY } = thread.metadata;
-      if (!cursorSelectors) {
-        return;
-      }
-
-      const fromAccurateCoords = getCoordsFromAccurateCursorPositions({
-        cursorSelectors: cursorSelectors.split(","),
-        cursorX,
-        cursorY,
-      });
-
-      if (!fromAccurateCoords) {
-        setCoords({ x: -10000, y: -10000 });
-        return;
-      }
-
-      setCoords({ x: fromAccurateCoords?.x, y: fromAccurateCoords.y });
-    }
-
-    updateCoords();
-
-    window.addEventListener("resize", updateCoords);
-    window.addEventListener("orientationchange", updateCoords);
-
-    return () => {
-      window.removeEventListener("resize", updateCoords);
-      window.removeEventListener("orientationchange", updateCoords);
-    };
-  }, [thread]);
-
-  // Start drag on pointer down
-  const handlePointerDown = useCallback(
-    (e: React.PointerEvent<HTMLDivElement>) => {
-      if (!threadRef.current) {
-        return;
-      }
-
-      e.currentTarget.setPointerCapture(e.pointerId);
-
-      const rect = threadRef.current.getBoundingClientRect();
-      dragOffset.current = {
-        x: e.pageX - rect.left - window.scrollX,
-        y: e.pageY - rect.top - window.scrollY,
-      };
-      dragStart.current = {
-        x: e.pageX,
-        y: e.pageY,
-      };
-
-      draggingRef.current = true;
-      onDragChange(true);
-    },
-    [onDragChange]
-  );
-
-  // Update locally on drag with easy coords
-  const handlePointerMove = useCallback(
-    (e: React.PointerEvent<HTMLDivElement>) => {
-      if (!draggingRef.current) {
-        return;
-      }
-
-      const { x, y } = dragOffset.current;
-      setCoords({
-        x: e.pageX - x,
-        y: e.pageY - y,
-      });
-    },
-    []
-  );
-
-  // After drag, update for everyone with accurate coords
-  const handlePointerUp = useCallback(
-    (e: React.PointerEvent<HTMLDivElement>) => {
-      if (!draggingRef.current || !threadRef.current) {
-        return;
-      }
-
-      // If no cursor movement and clicked, toggle minimized
-      if (e.pageX === dragStart.current.x && e.pageY === dragStart.current.y) {
-        draggingRef.current = false;
-        onDragChange(false);
-        e.currentTarget.releasePointerCapture(e.pointerId);
-        return;
-      }
-
-      updateCoords();
-
-      function updateCoords() {
-        if (!threadRef.current) {
-          return;
-        }
-
-        const elementUnder = getElementBeneath(
-          threadRef.current,
-          e.clientX - dragOffset.current.x,
-          e.clientY - dragOffset.current.y
-        );
-
-        if (!elementUnder) {
-          return;
-        }
-
-        const accurateCoords = getCoordsFromElement(
-          elementUnder as HTMLElement,
-          e.clientX,
-          e.clientY,
-          dragOffset.current
-        );
-
-        if (!accurateCoords) {
-          return;
-        }
-
-        const { cursorSelectors, cursorX, cursorY } = accurateCoords;
-
-        const metadata = {
-          cursorSelectors: cursorSelectors.join(","),
-          cursorX,
-          cursorY,
-          zIndex: maxZIndex + 1,
-        };
-
-        editThreadMetadata({
-          threadId: thread.id,
-          metadata,
-        });
-      }
-
-      // End drag
-      draggingRef.current = false;
-      onDragChange(false);
-      e.currentTarget.releasePointerCapture(e.pointerId);
-    },
-    [editThreadMetadata, maxZIndex, thread, onDragChange]
-  );
 
   // If other thread(s) above, increase z-index on last element updated
   const handleIncreaseZIndex = useCallback(() => {
@@ -231,17 +66,12 @@ function OverlayThread({
       id={`thread-${thread.id}`}
       className="flex gap-5 absolute top-0 left-0"
       style={{
-        transform: `translate(${coords.x}px, ${coords.y}px)`,
-        zIndex: draggingRef.current ? 9999999 : thread.metadata.zIndex,
+        transform: `translate(${thread.metadata.cursorX - 220}px, ${
+          thread.metadata.cursorY - 60
+        }px)`,
       }}
     >
-      <PinnedThread
-        thread={thread}
-        onPointerDown={handlePointerDown}
-        onPointerMove={handlePointerMove}
-        onPointerUp={handlePointerUp}
-        onFocus={handleIncreaseZIndex}
-      />
+      <PinnedThread thread={thread} onFocus={handleIncreaseZIndex} />
     </div>
   );
 }

@@ -2,7 +2,7 @@
 
 import { fabric } from "fabric";
 import { useState, useEffect, useRef } from "react";
-import { useMutation, useStorage } from "@/liveblocks.config";
+import { useMutation, useRedo, useStorage, useUndo } from "@/liveblocks.config";
 
 import {
   getShapes,
@@ -17,12 +17,14 @@ import {
   initializeFabric,
   renderCanvas,
 } from "@/lib/canvas";
-import { handleDelete } from "@/lib/key-events";
+import { handleDelete, handleKeyDown } from "@/lib/key-events";
 import { Navbar, LeftSidebar, RightSidebar, Live } from "@/components/index";
 
 import { ActiveElement, Attributes } from "@/types/type";
 
 function Home() {
+  const undo = useUndo();
+  const redo = useRedo();
   const canvasObjects = useStorage((root) => root.canvasObjects);
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -190,14 +192,22 @@ function Home() {
         fabricRef,
       });
     });
+    window.addEventListener("keydown", (e) =>
+      handleKeyDown(e, canvas, undo, redo, deleteShapeFromStorage)
+    );
 
     return () => {
       canvas.dispose();
+
       window.removeEventListener("resize", () => {
         handleResize({
           fabricRef,
         });
       });
+
+      window.removeEventListener("keydown", (e) =>
+        handleKeyDown(e, canvas, undo, redo, deleteShapeFromStorage)
+      );
     };
   }, [canvasRef]);
 
