@@ -22,7 +22,6 @@ import {
   ReactionEvent,
 } from "@/types/type";
 
-import { createSpecificShape } from "@/lib/shapes";
 import { handleDelete } from "@/lib/key-events";
 import useInterval from "@/hooks/useInterval";
 import {
@@ -33,6 +32,18 @@ import {
   LiveCursors,
   RightSidebar,
 } from "@/components/index";
+import {
+  getShapes,
+  handleCanvasMouseDown,
+  handleCanvasMouseUp,
+  handleCanvasObjectModified,
+  handleCanvasObjectMoving,
+  handleCanvasObjectScaling,
+  handleCanvasSelectionCreated,
+  handleCanvaseMouseMove,
+  initializeFabric,
+  renderCanvas,
+} from "@/lib/canvas";
 
 function Home() {
   const others = useOthers();
@@ -249,7 +260,10 @@ function Home() {
           icon: "/assets/icons/select.svg",
         });
 
-        getShapes();
+        getShapes({
+          canvas: fabricRef.current,
+          allShapes,
+        });
       }
 
       if (elem.value === "delete") {
@@ -260,24 +274,14 @@ function Home() {
           icon: "/assets/icons/select.svg",
         });
 
-        getShapes();
+        getShapes({
+          canvas: fabricRef.current,
+          allShapes,
+        });
       }
     } else {
       selectedShapeRef.current = "";
     }
-  };
-
-  const initializeFabric = () => {
-    const canvasElement = document.getElementById("canvas");
-
-    const canvas = new fabric.Canvas(canvasRef.current, {
-      width: canvasElement?.clientWidth,
-      height: canvasElement?.clientHeight,
-    });
-
-    fabricRef.current = canvas;
-
-    return canvas;
   };
 
   const handleResize = () => {
@@ -289,197 +293,71 @@ function Home() {
     canvas?.renderAll();
   };
 
-  const getShapes = () => {
-    const canvas = fabricRef.current;
-    const shapes = canvas?.getObjects() || [];
-
-    const shapesData = shapes.map((shape) => ({
-      type: shape.type || "",
-      width: shape.width || 0,
-      height: shape.height || 0,
-      fill: shape.fill || "",
-      left: shape.left || 0,
-      top: shape.top || 0,
-      // @ts-ignore
-      objectId: shape?.objectId,
-    }));
-
-    allShapes.current = shapesData;
-  };
-
   useEffect(() => {
-    const canvas = initializeFabric();
+    const canvas = initializeFabric({
+      canvasRef,
+      fabricRef,
+    });
 
     canvas.on("mouse:down", (options) => {
-      const pointer = canvas.getPointer(options.e);
-      const target = canvas.findTarget(options.e, false);
-
-      if (selectedShapeRef.current === "freeform") {
-        isDrawing.current = true;
-        canvas.isDrawingMode = true;
-        return;
-      }
-
-      canvas.isDrawingMode = false;
-
-      if (
-        target &&
-        (target.type === selectedShapeRef.current ||
-          target.type === "activeSelection")
-      ) {
-        isDrawing.current = false;
-        canvas.setActiveObject(target);
-        target.setCoords();
-      } else {
-        isDrawing.current = true;
-
-        shapeRef.current = createSpecificShape(
-          selectedShapeRef.current,
-          pointer
-        );
-
-        if (shapeRef.current) {
-          canvas.add(shapeRef.current);
-        }
-      }
+      handleCanvasMouseDown({
+        options,
+        canvas,
+        selectedShapeRef,
+        isDrawing,
+        shapeRef,
+      });
     });
 
     canvas.on("mouse:move", (options) => {
-      if (!isDrawing.current) return;
-      if (selectedShapeRef.current === "freeform") return;
-
-      canvas.isDrawingMode = false;
-      const pointer = canvas.getPointer(options.e);
-
-      switch (selectedShapeRef?.current) {
-        case "rectangle":
-          shapeRef.current?.set({
-            width: pointer.x - (shapeRef.current?.left || 0),
-            height: pointer.y - (shapeRef.current?.top || 0),
-          });
-          break;
-
-        case "circle":
-          shapeRef.current.set({
-            radius: Math.abs(pointer.x - (shapeRef.current?.left || 0)) / 2,
-          });
-          break;
-
-        case "triangle":
-          shapeRef.current?.set({
-            width: pointer.x - (shapeRef.current?.left || 0),
-            height: pointer.y - (shapeRef.current?.top || 0),
-          });
-          break;
-
-        case "line":
-          shapeRef.current?.set({
-            x2: pointer.x,
-            y2: pointer.y,
-          });
-          break;
-
-        default:
-          break;
-      }
-
-      canvas.renderAll();
-
-      if (shapeRef.current?.objectId) {
-        syncShapeInStorage(shapeRef.current);
-      }
+      handleCanvaseMouseMove({
+        options,
+        canvas,
+        isDrawing,
+        selectedShapeRef,
+        shapeRef,
+        syncShapeInStorage,
+      });
     });
 
     canvas.on("mouse:up", () => {
-      isDrawing.current = false;
-
-      syncShapeInStorage(shapeRef.current);
-
-      shapeRef.current = null;
-      activeObjectRef.current = null;
-      if (selectedShapeRef.current !== "freeform") {
-        // canvas.isDrawingMode = false;
-        selectedShapeRef.current = null;
-      }
-
-      getShapes();
-
-      if (!canvas.isDrawingMode) {
-        setTimeout(() => {
-          setActiveElement({
-            name: "Select",
-            value: "select",
-            icon: "/assets/icons/select.svg",
-          });
-        }, 700);
-      }
+      handleCanvasMouseUp({
+        canvas,
+        isDrawing,
+        shapeRef,
+        allShapes,
+        activeObjectRef,
+        selectedShapeRef,
+        syncShapeInStorage,
+        setActiveElement,
+      });
     });
 
-    // listen for object modification
     canvas.on("object:modified", (options) => {
-      const target = options.target;
-
-      if (target?.type == "activeSelection") {
-        // fix this
-      } else {
-        syncShapeInStorage(target);
-      }
+      handleCanvasObjectModified({
+        options,
+        syncShapeInStorage,
+      });
     });
 
     canvas?.on("object:moving", (options) => {
-      const target = options.target as fabric.Object;
-      const canvas = target.canvas as fabric.Canvas;
-
-      target.setCoords();
-
-      if (target && target.left) {
-        target.left = Math.max(
-          0,
-          Math.min(target.left, (canvas.width || 0) - (target.width || 0))
-        );
-      }
-
-      if (target && target.top) {
-        target.top = Math.max(
-          0,
-          Math.min(target.top, (canvas.height || 0) - (target.height || 0))
-        );
-      }
+      handleCanvasObjectMoving({
+        options,
+      });
     });
 
-    // listen for element selection
     canvas.on("selection:created", (options) => {
-      if (!options?.selected) return;
-
-      const selectedElement = options?.selected[0];
-
-      if (selectedElement && options.selected.length === 1) {
-        setElementAttributes({
-          width: Math.round(selectedElement?.getScaledWidth() || 0).toString(),
-          height: Math.round(
-            selectedElement?.getScaledHeight() || 0
-          ).toString(),
-          fill: selectedElement?.fill?.toString() || "",
-          stroke: selectedElement?.stroke || "",
-          // @ts-ignore
-          fontSize: selectedElement?.fontSize || "",
-          // @ts-ignore
-          fontFamily: selectedElement?.fontFamily || "",
-          // @ts-ignore
-          fontWeight: selectedElement?.fontWeight || "",
-        });
-      }
+      handleCanvasSelectionCreated({
+        options,
+        setElementAttributes,
+      });
     });
 
-    // listen for object scaling
     canvas.on("object:scaling", (options) => {
-      const selectedElement = options.target;
-
-      setElementAttributes((prev) => ({
-        ...prev,
-        width: Math.round(selectedElement?.getScaledWidth() || 0).toString(),
-        height: Math.round(selectedElement?.getScaledHeight() || 0).toString(),
-      }));
+      handleCanvasObjectScaling({
+        options,
+        setElementAttributes,
+      });
     });
 
     window.addEventListener("resize", handleResize);
@@ -491,25 +369,11 @@ function Home() {
   }, [canvasRef]);
 
   useEffect(() => {
-    fabricRef.current?.clear();
-
-    Array.from(canvasObjects, ([objectId, objectData]) => {
-      fabric.util.enlivenObjects(
-        [objectData],
-        (enlivenedObjects: fabric.Object[]) => {
-          enlivenedObjects.forEach((enlivenedObj) => {
-            if (activeObjectRef.current?.objectId === objectId) {
-              fabricRef.current?.setActiveObject(enlivenedObj);
-            }
-
-            fabricRef.current?.add(enlivenedObj);
-          });
-        },
-        "fabric"
-      );
+    renderCanvas({
+      fabricRef,
+      canvasObjects,
+      activeObjectRef,
     });
-
-    fabricRef.current?.renderAll();
   }, [canvasObjects]);
 
   return (
