@@ -29,7 +29,6 @@ function CursorChat({
     >
       {cursorState.mode === CursorMode.Chat && (
         <>
-          {/* <img src="cursor.svg" /> */}
           <CursorSVG color="#000" />
 
           <div
