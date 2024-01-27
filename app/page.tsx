@@ -219,9 +219,7 @@ function Home() {
       <section className="flex flex-row h-full">
         <LeftSidebar allShapes={allShapes} />
 
-        <Live>
-          <canvas ref={canvasRef} />
-        </Live>
+        <Live canvasRef={canvasRef} />
 
         <RightSidebar
           elementAttributes={elementAttributes}

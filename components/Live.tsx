@@ -18,7 +18,7 @@ import useInterval from "@/hooks/useInterval";
 
 import { CursorMode, CursorState, Reaction, ReactionEvent } from "@/types/type";
 
-function Live({ children }: { children: React.ReactNode }) {
+function Live({ canvasRef }: { canvasRef: any }) {
   const others = useOthers();
   const [{ cursor }, updateMyPresence] = useMyPresence() as any;
   const broadcast = useBroadcastEvent();
@@ -173,7 +173,7 @@ function Live({ children }: { children: React.ReactNode }) {
       onPointerDown={handlePointerDown}
       onPointerUp={handlePointerUp}
     >
-      {children}
+      <canvas ref={canvasRef} />
 
       {reactions.map((reaction) => (
         <FlyingReaction
