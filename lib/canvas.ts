@@ -158,9 +158,7 @@ export const handleCanvasMouseUp = ({
 
   shapeRef.current = null;
   activeObjectRef.current = null;
-  if (selectedShapeRef.current !== "freeform") {
-    selectedShapeRef.current = null;
-  }
+  selectedShapeRef.current = null;
 
   if (!canvas.isDrawingMode) {
     setTimeout(() => {

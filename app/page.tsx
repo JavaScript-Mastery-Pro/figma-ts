@@ -85,24 +85,27 @@ function Home() {
   const handleActiveElement = (elem: any) => {
     setActiveElement(elem);
 
-    if (elem.value !== "image" && elem.value !== "comments") {
-      selectedShapeRef.current = elem.value;
-
-      if (elem.value === "reset") {
+    switch (elem.value) {
+      case "reset":
         deleteAllShapes();
         fabricRef.current?.clear();
         setActiveElement(defaultNavElement);
-      }
+        break;
 
-      if (elem.value === "delete") {
+      case "delete":
         handleDelete(fabricRef.current as any, deleteShapeFromStorage);
         setActiveElement(defaultNavElement);
-      }
-    } else if (elem.value === "image") {
-      selectedShapeRef.current = "image";
-      imageInputRef.current?.click();
-    } else {
-      selectedShapeRef.current = "";
+        break;
+
+      case "image":
+        imageInputRef.current?.click();
+
+      case "comments":
+        break;
+
+      default:
+        selectedShapeRef.current = elem.value;
+        break;
     }
   };
 
