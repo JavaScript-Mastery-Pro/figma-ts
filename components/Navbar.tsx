@@ -12,9 +12,13 @@ import { NewThread } from "./comments/NewThread";
 
 function Navbar({
   activeElement,
+  imageInputRef,
+  handleImageUpload,
   handleActiveElement,
 }: {
   activeElement: any;
+  imageInputRef: any;
+  handleImageUpload: any;
   handleActiveElement: any;
 }) {
   const isActive = (value: string | Array<any>) => {
@@ -45,7 +49,9 @@ function Navbar({
               <ShapesMenu
                 item={item}
                 activeElement={activeElement}
+                imageInputRef={imageInputRef}
                 handleActiveElement={handleActiveElement}
+                handleImageUpload={handleImageUpload}
               />
             ) : item?.value === "comments" ? (
               <NewThread>

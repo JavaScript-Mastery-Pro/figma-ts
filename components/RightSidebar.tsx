@@ -7,16 +7,8 @@ import Direction from "./settings/Direction";
 import Alignment from "./settings/Alignment";
 import Dimensions from "./settings/Dimensions";
 
+import { RightSidebarProps } from "@/types/type";
 import { bringElement, modifyShape } from "@/lib/shapes";
-import { Attributes } from "@/types/type";
-
-type Props = {
-  elementAttributes: Attributes;
-  setElementAttributes: React.Dispatch<React.SetStateAction<Attributes>>;
-  fabricRef: React.RefObject<fabric.Canvas | null>;
-  activeObjectRef: React.RefObject<fabric.Object | null>;
-  syncShapeInStorage: (obj: any) => void;
-};
 
 function RightSidebar({
   elementAttributes,
@@ -24,7 +16,7 @@ function RightSidebar({
   fabricRef,
   activeObjectRef,
   syncShapeInStorage,
-}: Props) {
+}: RightSidebarProps) {
   const colorInputRef = useRef(null);
   const strokeInputRef = useRef(null);
 
@@ -33,13 +25,13 @@ function RightSidebar({
     () => (property: string, value: string) => {
       setElementAttributes((prev) => ({ ...prev, [property]: value }));
 
-      modifyShape(
-        fabricRef.current,
+      modifyShape({
+        canvas: fabricRef.current as fabric.Canvas,
         property,
         value,
         activeObjectRef,
-        syncShapeInStorage
-      );
+        syncShapeInStorage,
+      });
     },
     []
   );
@@ -47,9 +39,8 @@ function RightSidebar({
   const handleElemDirection = useMemo(
     () => (direction: string) => {
       bringElement({
-        canvas: fabricRef.current,
+        canvas: fabricRef.current as fabric.Canvas,
         direction,
-        activeObjectRef,
         syncShapeInStorage,
       });
     },

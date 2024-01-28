@@ -8,8 +8,6 @@ import {
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import { Button } from "./ui/button";
-import { useRef } from "react";
-import { handleImageUpload } from "@/lib/shapes";
 
 type elem = {
   name: string;
@@ -25,10 +23,17 @@ type Props = {
   };
   activeElement: any;
   handleActiveElement: any;
+  handleImageUpload: any;
+  imageInputRef: any;
 };
 
-function ShapesMenu({ item, activeElement, handleActiveElement }: Props) {
-  const imageInputRef = useRef(null);
+function ShapesMenu({
+  item,
+  activeElement,
+  handleActiveElement,
+  handleImageUpload,
+  imageInputRef,
+}: Props) {
   const isDropdownElem = item.value.some(
     (elem) => elem.value === activeElement.value
   );

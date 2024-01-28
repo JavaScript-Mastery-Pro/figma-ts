@@ -19,7 +19,11 @@ import useInterval from "@/hooks/useInterval";
 import { CursorMode, CursorState, Reaction, ReactionEvent } from "@/types/type";
 import { Comments } from "./comments/Comments";
 
-function Live({ canvasRef }: { canvasRef: any }) {
+function Live({
+  canvasRef,
+}: {
+  canvasRef: React.MutableRefObject<HTMLCanvasElement | null>;
+}) {
   const others = useOthers();
   const [{ cursor }, updateMyPresence] = useMyPresence() as any;
   const broadcast = useBroadcastEvent();

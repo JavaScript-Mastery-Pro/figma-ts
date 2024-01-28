@@ -21,6 +21,7 @@ import { handleDelete, handleKeyDown } from "@/lib/key-events";
 import { Navbar, LeftSidebar, RightSidebar, Live } from "@/components/index";
 
 import { ActiveElement, Attributes } from "@/types/type";
+import { handleImageUpload } from "@/lib/shapes";
 
 function Home() {
   const undo = useUndo();
@@ -35,6 +36,7 @@ function Home() {
   const selectedShapeRef = useRef<string | null>(null);
   const activeObjectRef = useRef<any>([]);
 
+  const imageInputRef = useRef<HTMLInputElement>(null);
   const [activeElement, setActiveElement] = useState<ActiveElement>({
     name: "",
     value: "",
@@ -105,6 +107,10 @@ function Home() {
       }
     } else {
       selectedShapeRef.current = "";
+    }
+
+    if (elem.value === "image") {
+      imageInputRef.current?.click();
     }
   };
 
@@ -231,7 +237,15 @@ function Home() {
   return (
     <main className="overflow-hidden h-screen">
       <Navbar
+        imageInputRef={imageInputRef}
         activeElement={activeElement}
+        handleImageUpload={(e: any) => {
+          handleImageUpload({
+            file: e.target.files[0],
+            canvas: fabricRef as any,
+            syncShapeInStorage,
+          });
+        }}
         handleActiveElement={handleActiveElement}
       />
 

@@ -56,7 +56,10 @@ export const handleCanvasMouseDown = ({
   } else {
     isDrawing.current = true;
 
-    shapeRef.current = createSpecificShape(selectedShapeRef.current, pointer);
+    shapeRef.current = createSpecificShape(
+      selectedShapeRef.current,
+      pointer as any
+    );
 
     if (shapeRef.current) {
       canvas.add(shapeRef.current);
@@ -189,6 +192,11 @@ export const handleCanvasObjectMoving = ({
 
   target.setCoords();
 
+  // if target is an image, we need to check if it's out of bounds
+  if (target && target.type === "image") {
+    return;
+  }
+
   if (target && target.left) {
     target.left = Math.max(
       0,
@@ -257,6 +265,8 @@ export const renderCanvas = ({
   activeObjectRef: any;
 }) => {
   fabricRef.current?.clear();
+
+  console.log(canvasObjects);
 
   Array.from(canvasObjects, ([objectId, objectData]) => {
     fabric.util.enlivenObjects(
