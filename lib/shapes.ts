@@ -90,6 +90,7 @@ export const createSpecificShape = (
 export const handleImageUpload = ({
   file,
   canvas,
+  shapeRef,
   syncShapeInStorage,
 }: ImageUpload) => {
   const reader = new FileReader();
@@ -103,6 +104,8 @@ export const handleImageUpload = ({
 
       // @ts-ignore
       img.objectId = uuidv4();
+
+      shapeRef.current = img;
 
       syncShapeInStorage(img);
       canvas.current.requestRenderAll();

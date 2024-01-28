@@ -118,6 +118,12 @@ export const handleCanvaseMouseMove = ({
       });
       break;
 
+    case "image":
+      shapeRef.current?.set({
+        width: pointer.x - (shapeRef.current?.left || 0),
+        height: pointer.y - (shapeRef.current?.top || 0),
+      });
+
     default:
       break;
   }

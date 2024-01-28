@@ -3,6 +3,7 @@
 import { LiveMap } from "@liveblocks/client";
 import { RoomProvider } from "@/liveblocks.config";
 import { ClientSideSuspense } from "@liveblocks/react";
+import Loader from "@/components/Loader";
 
 export function Room({ children }: { children: React.ReactNode }) {
   return (
@@ -13,13 +14,7 @@ export function Room({ children }: { children: React.ReactNode }) {
         canvasObjects: new LiveMap(),
       }}
     >
-      <ClientSideSuspense
-        fallback={
-          <div className="flex items-center justify-center text-figmaGrey-300">
-            <p>Loading...</p>
-          </div>
-        }
-      >
+      <ClientSideSuspense fallback={<Loader />}>
         {() => children}
       </ClientSideSuspense>
     </RoomProvider>

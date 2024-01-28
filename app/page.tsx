@@ -98,12 +98,11 @@ function Home() {
         handleDelete(fabricRef.current as any, deleteShapeFromStorage);
         setActiveElement(defaultNavElement);
       }
+    } else if (elem.value === "image") {
+      selectedShapeRef.current = "image";
+      imageInputRef.current?.click();
     } else {
       selectedShapeRef.current = "";
-    }
-
-    if (elem.value === "image") {
-      imageInputRef.current?.click();
     }
   };
 
@@ -233,9 +232,11 @@ function Home() {
         imageInputRef={imageInputRef}
         activeElement={activeElement}
         handleImageUpload={(e: any) => {
+          e.stopPropagation();
           handleImageUpload({
             file: e.target.files[0],
             canvas: fabricRef as any,
+            shapeRef,
             syncShapeInStorage,
           });
         }}
