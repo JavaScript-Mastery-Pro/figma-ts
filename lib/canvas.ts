@@ -40,6 +40,8 @@ export const handleCanvasMouseDown = ({
   const pointer = canvas.getPointer(options.e);
   const target = canvas.findTarget(options.e, false);
 
+  canvas.isDrawingMode = false;
+
   if (selectedShapeRef.current === "freeform") {
     isDrawing.current = true;
     canvas.isDrawingMode = true;

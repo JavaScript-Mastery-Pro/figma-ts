@@ -73,8 +73,8 @@ export const defaultNavElement = {
 };
 
 export const directionOptions = [
-  { label: "Bring to Front", value: "front", icon: "/assets/group.svg" },
-  { label: "Send to Back", value: "back", icon: "/assets/ungroup.svg" },
+  { label: "Bring to Front", value: "front", icon: "/assets/front.svg" },
+  { label: "Send to Back", value: "back", icon: "/assets/back.svg" },
 ];
 
 export const fontFamilyOptions = [

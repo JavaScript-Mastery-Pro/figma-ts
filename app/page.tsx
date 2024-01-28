@@ -100,6 +100,11 @@ function Home() {
 
       case "image":
         imageInputRef.current?.click();
+        isDrawing.current = false;
+        if (fabricRef.current) {
+          fabricRef.current.isDrawingMode = false;
+        }
+        break;
 
       case "comments":
         break;
