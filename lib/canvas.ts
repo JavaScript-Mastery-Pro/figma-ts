@@ -1,6 +1,8 @@
 import { fabric } from "fabric";
-import { createSpecificShape } from "./shapes";
+
 import { Attributes } from "@/types/type";
+import { createSpecificShape } from "./shapes";
+import { defaultNavElement } from "@/constants";
 
 export const initializeFabric = ({
   fabricRef,
@@ -156,11 +158,7 @@ export const handleCanvasMouseUp = ({
 
   if (!canvas.isDrawingMode) {
     setTimeout(() => {
-      setActiveElement({
-        name: "Select",
-        value: "select",
-        icon: "/assets/icons/select.svg",
-      });
+      setActiveElement(defaultNavElement);
     }, 700);
   }
 };
@@ -265,8 +263,6 @@ export const renderCanvas = ({
   activeObjectRef: any;
 }) => {
   fabricRef.current?.clear();
-
-  console.log(canvasObjects);
 
   Array.from(canvasObjects, ([objectId, objectData]) => {
     fabric.util.enlivenObjects(

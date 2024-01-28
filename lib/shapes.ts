@@ -92,8 +92,6 @@ export const handleImageUpload = ({
   canvas,
   syncShapeInStorage,
 }: ImageUpload) => {
-  console.log(file);
-
   const reader = new FileReader();
 
   reader.onload = () => {

@@ -22,6 +22,7 @@ import { Navbar, LeftSidebar, RightSidebar, Live } from "@/components/index";
 
 import { ActiveElement, Attributes } from "@/types/type";
 import { handleImageUpload } from "@/lib/shapes";
+import { defaultNavElement } from "@/constants";
 
 function Home() {
   const undo = useUndo();
@@ -90,20 +91,12 @@ function Home() {
       if (elem.value === "reset") {
         deleteAllShapes();
         fabricRef.current?.clear();
-        setActiveElement({
-          name: "Select",
-          value: "select",
-          icon: "/assets/icons/select.svg",
-        });
+        setActiveElement(defaultNavElement);
       }
 
       if (elem.value === "delete") {
-        handleDelete(fabricRef.current, deleteShapeFromStorage);
-        setActiveElement({
-          name: "Select",
-          value: "select",
-          icon: "/assets/icons/select.svg",
-        });
+        handleDelete(fabricRef.current as any, deleteShapeFromStorage);
+        setActiveElement(defaultNavElement);
       }
     } else {
       selectedShapeRef.current = "";
@@ -194,14 +187,14 @@ function Home() {
     });
 
     window.addEventListener("keydown", (e) =>
-      handleKeyDown(
+      handleKeyDown({
         e,
-        fabricRef.current,
+        canvas: fabricRef.current,
         undo,
         redo,
         syncShapeInStorage,
-        deleteShapeFromStorage
-      )
+        deleteShapeFromStorage,
+      })
     );
 
     return () => {
@@ -214,14 +207,14 @@ function Home() {
       });
 
       window.removeEventListener("keydown", (e) =>
-        handleKeyDown(
+        handleKeyDown({
           e,
-          fabricRef.current,
+          canvas: fabricRef.current,
           undo,
           redo,
           syncShapeInStorage,
-          deleteShapeFromStorage
-        )
+          deleteShapeFromStorage,
+        })
       );
     };
   }, [canvasRef]);
