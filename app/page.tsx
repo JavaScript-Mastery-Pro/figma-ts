@@ -13,6 +13,7 @@ import {
   handleCanvasSelectionCreated,
   handleCanvasZoom,
   handleCanvaseMouseMove,
+  handlePathCreated,
   handleResize,
   initializeFabric,
   renderCanvas,
@@ -20,9 +21,9 @@ import {
 import { handleDelete, handleKeyDown } from "@/lib/key-events";
 import { Navbar, LeftSidebar, RightSidebar, Live } from "@/components/index";
 
-import { ActiveElement, Attributes } from "@/types/type";
 import { handleImageUpload } from "@/lib/shapes";
 import { defaultNavElement } from "@/constants";
+import { ActiveElement, Attributes } from "@/types/type";
 
 function Home() {
   const undo = useUndo();
@@ -145,6 +146,13 @@ function Home() {
         selectedShapeRef,
         syncShapeInStorage,
         setActiveElement,
+      });
+    });
+
+    canvas.on("path:created", (options) => {
+      handlePathCreated({
+        options,
+        syncShapeInStorage,
       });
     });
 

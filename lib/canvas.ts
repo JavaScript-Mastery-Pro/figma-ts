@@ -1,6 +1,7 @@
 import { fabric } from "fabric";
+import { v4 as uuid4 } from "uuid";
 
-import { Attributes } from "@/types/type";
+import { Attributes, CustomFabricObject } from "@/types/type";
 import { createSpecificShape } from "./shapes";
 import { defaultNavElement } from "@/constants";
 
@@ -42,6 +43,7 @@ export const handleCanvasMouseDown = ({
   if (selectedShapeRef.current === "freeform") {
     isDrawing.current = true;
     canvas.isDrawingMode = true;
+    canvas.freeDrawingBrush.width = 5;
     return;
   }
 
@@ -153,6 +155,7 @@ export const handleCanvasMouseUp = ({
   setActiveElement: any;
 }) => {
   isDrawing.current = false;
+  if (selectedShapeRef.current === "freeform") return;
 
   syncShapeInStorage(shapeRef.current);
 
@@ -182,6 +185,23 @@ export const handleCanvasObjectModified = ({
   } else {
     syncShapeInStorage(target);
   }
+};
+
+export const handlePathCreated = ({
+  options,
+  syncShapeInStorage,
+}: {
+  options: (fabric.IEvent & { path: CustomFabricObject<fabric.Path> }) | any;
+  syncShapeInStorage: (shape: fabric.Object) => void;
+}) => {
+  const path = options.path;
+  if (!path) return;
+
+  path.set({
+    objectId: uuid4(),
+  });
+
+  syncShapeInStorage(path);
 };
 
 export const handleCanvasObjectMoving = ({
