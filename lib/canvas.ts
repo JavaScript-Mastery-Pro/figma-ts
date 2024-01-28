@@ -190,22 +190,23 @@ export const handleCanvasObjectMoving = ({
 
   target.setCoords();
 
-  // if target is an image, we need to check if it's out of bounds
-  if (target && target.type === "image") {
-    return;
-  }
-
   if (target && target.left) {
     target.left = Math.max(
       0,
-      Math.min(target.left, (canvas.width || 0) - (target.width || 0))
+      Math.min(
+        target.left,
+        (canvas.width || 0) - (target.getScaledWidth() || target.width || 0)
+      )
     );
   }
 
   if (target && target.top) {
     target.top = Math.max(
       0,
-      Math.min(target.top, (canvas.height || 0) - (target.height || 0))
+      Math.min(
+        target.top,
+        (canvas.height || 0) - (target.getScaledHeight() || target.height || 0)
+      )
     );
   }
 };
