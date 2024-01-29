@@ -17,6 +17,7 @@ function ShapesMenu({
   handleImageUpload,
   imageInputRef,
 }: ShapesMenuProps) {
+  // check if the active element is a dropdown element
   const isDropdownElem = item.value.some(
     (elem) => elem?.value === activeElement.value
   );

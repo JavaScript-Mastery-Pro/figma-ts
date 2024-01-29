@@ -98,7 +98,6 @@ export const getShapeInfo = (shapeType: string) => {
   }
 };
 
-// write an exportToPdf function that takes in the canvas and downloads the canvas as a pdf while preserving the canvas elements size and position as it is on the canvas
 export const exportToPdf = () => {
   const canvas = document.querySelector("canvas");
 

@@ -22,6 +22,13 @@ function PinnedComposer({ onComposerSubmit, ...props }: Props) {
         />
       </div>
       <div className="shadow bg-white rounded-lg flex flex-col text-sm min-w-96 overflow-hidden p-2">
+        {/**
+         * We're using the Composer component to create a new comment.
+         * Liveblocks provides a Composer component that allows to
+         * create/edit/delete comments.
+         *
+         * Composer: https://liveblocks.io/docs/api-reference/liveblocks-react-comments#Composer
+         */}
         <Composer
           onComposerSubmit={onComposerSubmit}
           onClick={(e) => {

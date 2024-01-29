@@ -2,6 +2,7 @@ import Cursor from "./Cursor";
 import { COLORS } from "@/constants";
 import { LiveCursorProps } from "@/types/type";
 
+// display all other live cursors
 function LiveCursors({ others }: LiveCursorProps) {
   return others.map(({ connectionId, presence }) => {
     if (presence == null || !presence?.cursor) {
