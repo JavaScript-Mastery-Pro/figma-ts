@@ -28,7 +28,7 @@ const LeftSidebar = ({ allShapes }: { allShapes: Array<any> }) => {
                   height={16}
                   className='group-hover:invert'
                 />
-                <h3 className='text-sm font-semibold'>{info.name}</h3>
+                <h3 className='text-sm font-semibold capitalize'>{info.name}</h3>
               </div>
             );
           })}

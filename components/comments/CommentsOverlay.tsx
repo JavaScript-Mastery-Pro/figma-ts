@@ -3,12 +3,7 @@
 import { useCallback, useRef } from "react";
 import { ThreadData } from "@liveblocks/client";
 
-import {
-  ThreadMetadata,
-  useEditThreadMetadata,
-  useThreads,
-  useUser,
-} from "@/liveblocks.config";
+import { ThreadMetadata, useEditThreadMetadata, useThreads, useUser } from "@/liveblocks.config";
 import { useMaxZIndex } from "@/lib/useMaxZIndex";
 
 import { PinnedThread } from "./PinnedThread";
@@ -27,11 +22,7 @@ export const CommentsOverlay = () => {
       {threads
         .filter((thread) => !thread.metadata.resolved)
         .map((thread) => (
-          <OverlayThread
-            key={thread.id}
-            thread={thread}
-            maxZIndex={maxZIndex}
-          />
+          <OverlayThread key={thread.id} thread={thread} maxZIndex={maxZIndex} />
         ))}
     </div>
   );
@@ -65,11 +56,9 @@ const OverlayThread = ({ thread, maxZIndex }: OverlayThreadProps) => {
     <div
       ref={threadRef}
       id={`thread-${thread.id}`}
-      className='absolute left-0 top-0 flex gap-5'
+      className="absolute left-0 top-0 flex gap-5"
       style={{
-        transform: `translate(${thread.metadata.cursorX - 220}px, ${
-          thread.metadata.cursorY - 60
-        }px)`,
+        transform: `translate(${thread.metadata.cursorX - 220}px, ${thread.metadata.cursorY - 60}px)`,
       }}
     >
       <PinnedThread thread={thread} onFocus={handleIncreaseZIndex} />

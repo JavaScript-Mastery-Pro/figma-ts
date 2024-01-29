@@ -72,15 +72,6 @@ const ShapesMenu = ({
                   {elem?.name}
                 </p>
               </div>
-              <p
-                className={`text-sm capitalize  ${
-                  activeElement.value === elem?.value
-                    ? "text-primary-black"
-                    : "text-white"
-                }`}
-              >
-                {elem?.value[0]}
-              </p>
             </Button>
           ))}
         </DropdownMenuContent>

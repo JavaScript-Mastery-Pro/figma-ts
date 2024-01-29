@@ -242,7 +242,7 @@ const Home = () => {
   }, [canvasObjects]);
 
   return (
-    <main className='h-screen overflow-hidden'>
+    <main className="h-screen overflow-hidden">
       <Navbar
         imageInputRef={imageInputRef}
         activeElement={activeElement}
@@ -258,7 +258,7 @@ const Home = () => {
         handleActiveElement={handleActiveElement}
       />
 
-      <section className='flex h-full flex-row'>
+      <section className="flex h-full flex-row">
         <LeftSidebar allShapes={Array.from(canvasObjects)} />
 
         <Live canvasRef={canvasRef} undo={undo} redo={redo} />
@@ -273,6 +273,6 @@ const Home = () => {
       </section>
     </main>
   );
-}
+};
 
 export default Home;

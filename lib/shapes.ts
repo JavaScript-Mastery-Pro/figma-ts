@@ -177,5 +177,8 @@ export const bringElement = ({
     canvas.sendToBack(selectedElement);
   }
 
+  // canvas.renderAll();
   syncShapeInStorage(selectedElement);
+
+  // re-render all objects on the canvas
 };
