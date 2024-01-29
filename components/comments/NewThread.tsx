@@ -13,7 +13,6 @@ import * as Portal from "@radix-ui/react-portal";
 import { ComposerSubmitComment } from "@liveblocks/react-comments/primitives";
 
 import { useCreateThread } from "@/liveblocks.config";
-
 import { useMaxZIndex } from "@/lib/useMaxZIndex";
 import { getCoordsFromPointerEvent } from "@/lib/coords";
 
@@ -21,15 +20,11 @@ import PinnedComposer from "./PinnedComposer";
 import NewThreadCursor from "./NewThreadCursor";
 
 type ComposerCoords = null | { x: number; y: number };
+type CommentingState = "placing" | "placed" | "complete";
 
-type Props = {
-  children: ReactNode;
-};
-
-export function NewThread({ children }: Props) {
-  const [creatingCommentState, setCreatingCommentState] = useState<
-    "placing" | "placed" | "complete"
-  >("complete");
+export const NewThread = ({ children }: { children: ReactNode }) => {
+  const [creatingCommentState, setCreatingCommentState] =
+    useState<CommentingState>("complete");
   const createThread = useCreateThread();
   const maxZIndex = useMaxZIndex();
 
@@ -46,7 +41,7 @@ export function NewThread({ children }: Props) {
     }
 
     // Place a composer on the screen
-    function newComment(e: MouseEvent) {
+    const newComment = (e: MouseEvent) => {
       e.preventDefault();
 
       // If already placed, click outside to close composer
@@ -61,7 +56,7 @@ export function NewThread({ children }: Props) {
         x: e.pageX,
         y: e.pageY,
       });
-    }
+    };
 
     document.documentElement.addEventListener("click", newComment);
 
@@ -72,11 +67,11 @@ export function NewThread({ children }: Props) {
 
   useEffect(() => {
     // If dragging composer, update position
-    function handlePointerMove(e: PointerEvent) {
+    const handlePointerMove = (e: PointerEvent) => {
       // Prevents issue with composedPath getting removed
       (e as any)._savedComposedPath = e.composedPath();
       lastPointerEvent.current = e;
-    }
+    };
 
     document.documentElement.addEventListener("pointermove", handlePointerMove);
 
@@ -94,7 +89,7 @@ export function NewThread({ children }: Props) {
       return;
     }
 
-    function handlePointerDown(e: PointerEvent) {
+    const handlePointerDown = (e: PointerEvent) => {
       if (allowComposerRef.current) {
         return;
       }
@@ -103,15 +98,15 @@ export function NewThread({ children }: Props) {
       (e as any)._savedComposedPath = e.composedPath();
       lastPointerEvent.current = e;
       setAllowUseComposer(true);
-    }
+    };
 
     // Right click to cancel placing
-    function handleContextMenu(e: Event) {
+    const handleContextMenu = (e: Event) => {
       if (creatingCommentState === "placing") {
         e.preventDefault();
         setCreatingCommentState("complete");
       }
-    }
+    };
 
     document.documentElement.addEventListener("pointerdown", handlePointerDown);
     document.documentElement.addEventListener("contextmenu", handleContextMenu);
@@ -172,7 +167,7 @@ export function NewThread({ children }: Props) {
       </Slot>
       {composerCoords && creatingCommentState === "placed" ? (
         <Portal.Root
-          className="absolute top-0 left-0"
+          className='absolute left-0 top-0'
           style={{
             pointerEvents: allowUseComposer ? "initial" : "none",
             transform: `translate(${composerCoords.x}px, ${composerCoords.y}px)`,
@@ -185,4 +180,4 @@ export function NewThread({ children }: Props) {
       <NewThreadCursor display={creatingCommentState === "placing"} />
     </>
   );
-}
+};

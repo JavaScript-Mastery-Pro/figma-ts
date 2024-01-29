@@ -2,21 +2,22 @@
 
 import Image from "next/image";
 
+import { ShapesMenuProps } from "@/types/type";
+
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import { Button } from "./ui/button";
-import { ShapesMenuProps } from "@/types/type";
 
-function ShapesMenu({
+const ShapesMenu = ({
   item,
   activeElement,
   handleActiveElement,
   handleImageUpload,
   imageInputRef,
-}: ShapesMenuProps) {
+}: ShapesMenuProps) => {
   const isDropdownElem = item.value.some(
     (elem) => elem?.value === activeElement.value
   );
@@ -24,9 +25,9 @@ function ShapesMenu({
   return (
     <>
       <DropdownMenu>
-        <DropdownMenuTrigger asChild className="no-ring">
+        <DropdownMenuTrigger asChild className='no-ring'>
           <Button
-            className="relative w-5 h-5 object-contain"
+            className='relative h-5 w-5 object-contain'
             onClick={() => handleActiveElement(item)}
           >
             <Image
@@ -38,20 +39,20 @@ function ShapesMenu({
           </Button>
         </DropdownMenuTrigger>
 
-        <DropdownMenuContent className="mt-5 flex flex-col gap-y-1 border-none bg-primary-black py-4 text-white">
+        <DropdownMenuContent className='mt-5 flex flex-col gap-y-1 border-none bg-primary-black py-4 text-white'>
           {item.value.map((elem) => (
             <Button
               key={elem?.name}
               onClick={() => {
                 handleActiveElement(elem);
               }}
-              className={`flex h-fit rounded-none justify-between gap-10 focus:border-none px-5 py-3 ${
+              className={`flex h-fit justify-between gap-10 rounded-none px-5 py-3 focus:border-none ${
                 activeElement.value === elem?.value
                   ? "bg-primary-green"
                   : "hover:bg-primary-grey-200"
               }`}
             >
-              <div className="group flex items-center gap-2">
+              <div className='group flex items-center gap-2'>
                 <Image
                   src={elem?.icon as string}
                   alt={elem?.name as string}
@@ -72,7 +73,7 @@ function ShapesMenu({
                 </p>
               </div>
               <p
-                className={`capitalize text-sm  ${
+                className={`text-sm capitalize  ${
                   activeElement.value === elem?.value
                     ? "text-primary-black"
                     : "text-white"
@@ -86,14 +87,14 @@ function ShapesMenu({
       </DropdownMenu>
 
       <input
-        type="file"
-        className="hidden"
+        type='file'
+        className='hidden'
         ref={imageInputRef}
-        accept="image/*"
+        accept='image/*'
         onChange={handleImageUpload}
       />
     </>
   );
-}
+};
 
 export default ShapesMenu;

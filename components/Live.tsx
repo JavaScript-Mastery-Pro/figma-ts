@@ -1,40 +1,38 @@
 "use client";
 
+import { useCallback, useEffect, useState } from "react";
+
 import {
   useBroadcastEvent,
   useEventListener,
   useMyPresence,
   useOthers,
 } from "@/liveblocks.config";
-import { useCallback, useEffect, useState } from "react";
-
-import {
-  FlyingReaction,
-  ReactionSelector,
-  CursorChat,
-  LiveCursors,
-} from "./index";
 import useInterval from "@/hooks/useInterval";
-
 import { CursorMode, CursorState, Reaction, ReactionEvent } from "@/types/type";
-import { Comments } from "./comments/Comments";
 import { shortcuts } from "@/constants";
+
+import { Comments } from "./comments/Comments";
+import {
+  CursorChat,
+  FlyingReaction,
+  LiveCursors,
+  ReactionSelector,
+} from "./index";
 import {
   ContextMenu,
-  ContextMenuTrigger,
   ContextMenuContent,
   ContextMenuItem,
+  ContextMenuTrigger,
 } from "./ui/context-menu";
 
-function Live({
-  canvasRef,
-  undo,
-  redo,
-}: {
+type Props = {
   canvasRef: React.MutableRefObject<HTMLCanvasElement | null>;
   undo: () => void;
   redo: () => void;
-}) {
+};
+
+const Live = ({ canvasRef, undo, redo }: Props) => {
   const others = useOthers();
   const [{ cursor }, updateMyPresence] = useMyPresence() as any;
   const broadcast = useBroadcastEvent();
@@ -92,7 +90,7 @@ function Live({
   });
 
   useEffect(() => {
-    function onKeyUp(e: KeyboardEvent) {
+    const onKeyUp = (e: KeyboardEvent) => {
       if (e.key === "/") {
         setCursorState({
           mode: CursorMode.Chat,
@@ -105,13 +103,13 @@ function Live({
       } else if (e.key === "e") {
         setCursorState({ mode: CursorMode.ReactionSelector });
       }
-    }
+    };
 
-    function onKeyDown(e: KeyboardEvent) {
+    const onKeyDown = (e: KeyboardEvent) => {
       if (e.key === "/") {
         e.preventDefault();
       }
-    }
+    };
 
     window.addEventListener("keyup", onKeyUp);
     window.addEventListener("keydown", onKeyDown);
@@ -209,8 +207,8 @@ function Live({
   return (
     <ContextMenu>
       <ContextMenuTrigger
-        className="relative flex flex-1 w-full h-full items-center justify-center"
-        id="canvas"
+        className='relative flex h-full w-full flex-1 items-center justify-center'
+        id='canvas'
         style={{
           cursor: cursorState.mode === CursorMode.Chat ? "none" : "auto",
         }}
@@ -252,20 +250,20 @@ function Live({
         <Comments />
       </ContextMenuTrigger>
 
-      <ContextMenuContent className="right-menu-content">
+      <ContextMenuContent className='right-menu-content'>
         {shortcuts.map((item) => (
           <ContextMenuItem
             key={item.key}
-            className="right-menu-item"
+            className='right-menu-item'
             onClick={() => handleContextMenuClick(item.name)}
           >
             <p>{item.name}</p>
-            <p className="text-primary-grey-300 text-xs">{item.shortcut}</p>
+            <p className='text-xs text-primary-grey-300'>{item.shortcut}</p>
           </ContextMenuItem>
         ))}
       </ContextMenuContent>
     </ContextMenu>
   );
-}
+};
 
 export default Live;

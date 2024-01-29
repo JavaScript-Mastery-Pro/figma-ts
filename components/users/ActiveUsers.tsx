@@ -1,11 +1,11 @@
 "use client";
 
-import React, { useMemo } from "react";
-
-import Avatar from "./Avatar";
+import { useMemo } from "react";
 
 import { generateRandomName } from "@/lib/utils";
 import { useOthers, useSelf } from "@/liveblocks.config";
+
+import Avatar from "./Avatar";
 
 const ActiveUsers = () => {
   const others = useOthers();
@@ -15,21 +15,21 @@ const ActiveUsers = () => {
     const hasMoreUsers = others.length > 2;
 
     return (
-      <div className="flex justify-center items-center gap-1">
+      <div className='flex items-center justify-center gap-1'>
         {currentUser && (
-          <Avatar name="You" otherStyles="border-[3px] border-primary-green" />
+          <Avatar name='You' otherStyles='border-[3px] border-primary-green' />
         )}
 
         {others.slice(0, 2).map(({ connectionId }) => (
           <Avatar
             key={connectionId}
             name={generateRandomName()}
-            otherStyles="-ml-3"
+            otherStyles='-ml-3'
           />
         ))}
 
         {hasMoreUsers && (
-          <div className="w-9 h-9 rounded-full flex items-center justify-center -ml-3 bg-primary-black z-10">
+          <div className='z-10 -ml-3 flex h-9 w-9 items-center justify-center rounded-full bg-primary-black'>
             +{others.length - 2}
           </div>
         )}
