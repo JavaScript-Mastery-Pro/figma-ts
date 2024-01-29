@@ -6,7 +6,6 @@ import { bringElement, modifyShape } from "@/lib/shapes";
 import Text from "./settings/Text";
 import Color from "./settings/Color";
 import Export from "./settings/Export";
-import Direction from "./settings/Direction";
 import Dimensions from "./settings/Dimensions";
 
 const RightSidebar = ({
@@ -30,15 +29,7 @@ const RightSidebar = ({
       syncShapeInStorage,
     });
   };
-
-  const handleElemDirection = (direction: string) => {
-    bringElement({
-      canvas: fabricRef.current as fabric.Canvas,
-      direction,
-      syncShapeInStorage,
-    });
-  };
-
+  
   // memoize the content of the right sidebar to avoid re-rendering on every mouse actions
   const memoizedContent = useMemo(
     () => (
@@ -47,8 +38,6 @@ const RightSidebar = ({
         <span className="text-xs text-primary-grey-300 mt-3 px-5 border-b border-primary-grey-200 pb-4">
           Make changes to canvas as you like
         </span>
-
-        <Direction handleElemDirection={handleElemDirection} />
 
         <Dimensions
           width={elementAttributes.width}

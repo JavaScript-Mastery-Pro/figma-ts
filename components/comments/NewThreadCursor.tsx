@@ -3,11 +3,13 @@
 import { useEffect, useState } from "react";
 import * as Portal from "@radix-ui/react-portal";
 
+const DEFAULT_CURSOR_POSITION = -10000;
+
 // display a custom cursor when placing a new thread
 const NewThreadCursor = ({ display }: { display: boolean }) => {
   const [coords, setCoords] = useState({
-    x: -10000,
-    y: -10000,
+    x: DEFAULT_CURSOR_POSITION,
+    y: DEFAULT_CURSOR_POSITION,
   });
 
   useEffect(() => {
@@ -32,8 +34,8 @@ const NewThreadCursor = ({ display }: { display: boolean }) => {
           e.clientY > canvasRect.bottom
         ) {
           setCoords({
-            x: -10000,
-            y: -10000,
+            x: DEFAULT_CURSOR_POSITION,
+            y: DEFAULT_CURSOR_POSITION,
           });
           return;
         }
