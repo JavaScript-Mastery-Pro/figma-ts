@@ -3,7 +3,11 @@ import Image from "next/image";
 import { Button } from "../ui/button";
 import { directionOptions } from "@/constants";
 
-function Direction({ handleElemDirection }: any) {
+function Direction({
+  handleElemDirection,
+}: {
+  handleElemDirection: (value: string) => void;
+}) {
   return (
     <section className="flex flex-col border-b border-primary-grey-200 py-3 gap-3">
       <h3 className="px-5 text-[10px] uppercase">Direction</h3>

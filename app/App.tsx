@@ -34,9 +34,9 @@ function Home() {
   const fabricRef = useRef<fabric.Canvas | null>(null);
 
   const isDrawing = useRef(false);
-  const shapeRef = useRef<any>(null);
+  const shapeRef = useRef<fabric.Object | null>(null);
   const selectedShapeRef = useRef<string | null>(null);
-  const activeObjectRef = useRef<any>([]);
+  const activeObjectRef = useRef<fabric.Object | null>(null);
 
   const imageInputRef = useRef<HTMLInputElement>(null);
   const [activeElement, setActiveElement] = useState<ActiveElement>({
@@ -83,10 +83,10 @@ function Home() {
     canvasObjects.set(objectId, shapeData);
   }, []);
 
-  const handleActiveElement = (elem: any) => {
+  const handleActiveElement = (elem: ActiveElement) => {
     setActiveElement(elem);
 
-    switch (elem.value) {
+    switch (elem?.value) {
       case "reset":
         deleteAllShapes();
         fabricRef.current?.clear();
@@ -110,7 +110,7 @@ function Home() {
         break;
 
       default:
-        selectedShapeRef.current = elem.value;
+        selectedShapeRef.current = elem?.value as string;
         break;
     }
   };

@@ -1,7 +1,17 @@
 import { fabric } from "fabric";
 import { v4 as uuid4 } from "uuid";
 
-import { Attributes, CustomFabricObject } from "@/types/type";
+import {
+  CanvasMouseDown,
+  CanvasMouseMove,
+  CanvasMouseUp,
+  CanvasObjectModified,
+  CanvasObjectScaling,
+  CanvasPathCreated,
+  CanvasSelectionCreated,
+  CustomFabricObject,
+  RenderCanvas,
+} from "@/types/type";
 import { createSpecificShape } from "./shapes";
 import { defaultNavElement } from "@/constants";
 
@@ -30,13 +40,7 @@ export const handleCanvasMouseDown = ({
   selectedShapeRef,
   isDrawing,
   shapeRef,
-}: {
-  options: fabric.IEvent;
-  canvas: fabric.Canvas;
-  selectedShapeRef: any;
-  isDrawing: React.MutableRefObject<boolean>;
-  shapeRef: React.MutableRefObject<fabric.Object | null>;
-}) => {
+}: CanvasMouseDown) => {
   const pointer = canvas.getPointer(options.e);
   const target = canvas.findTarget(options.e, false);
 
@@ -80,14 +84,7 @@ export const handleCanvaseMouseMove = ({
   selectedShapeRef,
   shapeRef,
   syncShapeInStorage,
-}: {
-  options: fabric.IEvent;
-  canvas: fabric.Canvas;
-  isDrawing: React.MutableRefObject<boolean>;
-  selectedShapeRef: any;
-  shapeRef: any;
-  syncShapeInStorage: (shape: fabric.Object) => void;
-}) => {
+}: CanvasMouseMove) => {
   if (!isDrawing.current) return;
   if (selectedShapeRef.current === "freeform") return;
 
@@ -147,15 +144,7 @@ export const handleCanvasMouseUp = ({
   selectedShapeRef,
   syncShapeInStorage,
   setActiveElement,
-}: {
-  canvas: fabric.Canvas;
-  isDrawing: React.MutableRefObject<boolean>;
-  shapeRef: any;
-  activeObjectRef: React.MutableRefObject<fabric.Object | null>;
-  selectedShapeRef: any;
-  syncShapeInStorage: (shape: fabric.Object) => void;
-  setActiveElement: any;
-}) => {
+}: CanvasMouseUp) => {
   isDrawing.current = false;
   if (selectedShapeRef.current === "freeform") return;
 
@@ -175,10 +164,7 @@ export const handleCanvasMouseUp = ({
 export const handleCanvasObjectModified = ({
   options,
   syncShapeInStorage,
-}: {
-  options: fabric.IEvent;
-  syncShapeInStorage: (shape: fabric.Object) => void;
-}) => {
+}: CanvasObjectModified) => {
   const target = options.target;
   if (!target) return;
 
@@ -192,10 +178,7 @@ export const handleCanvasObjectModified = ({
 export const handlePathCreated = ({
   options,
   syncShapeInStorage,
-}: {
-  options: (fabric.IEvent & { path: CustomFabricObject<fabric.Path> }) | any;
-  syncShapeInStorage: (shape: fabric.Object) => void;
-}) => {
+}: CanvasPathCreated) => {
   const path = options.path;
   if (!path) return;
 
@@ -240,10 +223,7 @@ export const handleCanvasObjectMoving = ({
 export const handleCanvasSelectionCreated = ({
   options,
   setElementAttributes,
-}: {
-  options: fabric.IEvent;
-  setElementAttributes: React.Dispatch<React.SetStateAction<Attributes>>;
-}) => {
+}: CanvasSelectionCreated) => {
   if (!options?.selected) return;
 
   const selectedElement = options?.selected[0];
@@ -267,10 +247,7 @@ export const handleCanvasSelectionCreated = ({
 export const handleCanvasObjectScaling = ({
   options,
   setElementAttributes,
-}: {
-  options: fabric.IEvent;
-  setElementAttributes: React.Dispatch<React.SetStateAction<Attributes>>;
-}) => {
+}: CanvasObjectScaling) => {
   const selectedElement = options.target;
 
   setElementAttributes((prev) => ({
@@ -284,11 +261,7 @@ export const renderCanvas = ({
   fabricRef,
   canvasObjects,
   activeObjectRef,
-}: {
-  fabricRef: React.MutableRefObject<fabric.Canvas | null>;
-  canvasObjects: any;
-  activeObjectRef: any;
-}) => {
+}: RenderCanvas) => {
   fabricRef.current?.clear();
 
   Array.from(canvasObjects, ([objectId, objectData]) => {

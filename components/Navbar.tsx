@@ -9,23 +9,19 @@ import { navElements } from "@/constants";
 
 import ActiveUsers from "./users/ActiveUsers";
 import { NewThread } from "./comments/NewThread";
+import { ActiveElement, NavbarProps } from "@/types/type";
 
 function Navbar({
   activeElement,
   imageInputRef,
   handleImageUpload,
   handleActiveElement,
-}: {
-  activeElement: any;
-  imageInputRef: any;
-  handleImageUpload: any;
-  handleActiveElement: any;
-}) {
-  const isActive = (value: string | Array<any>) => {
+}: NavbarProps) {
+  const isActive = (value: string | Array<ActiveElement>) => {
     return (
       (activeElement && activeElement.value === value) ||
       (Array.isArray(value) &&
-        value.some((val) => val.value === activeElement?.value))
+        value.some((val) => val?.value === activeElement?.value))
     );
   };
 
@@ -34,7 +30,7 @@ function Navbar({
       <Image src="/assets/logo.svg" alt="FigPro Logo" width={58} height={20} />
 
       <ul className="flex flex-row">
-        {navElements.map((item: any) => (
+        {navElements.map((item: ActiveElement | any) => (
           <li
             key={item.name}
             className={`group px-2.5 py-5 flex justify-center items-center
