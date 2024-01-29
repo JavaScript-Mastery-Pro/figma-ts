@@ -6,7 +6,6 @@ import { bringElement, modifyShape } from "@/lib/shapes";
 import Text from "./settings/Text";
 import Color from "./settings/Color";
 import Export from "./settings/Export";
-import Direction from "./settings/Direction";
 import Dimensions from "./settings/Dimensions";
 
 const RightSidebar = ({
