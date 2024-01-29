@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import * as Portal from "@radix-ui/react-portal";
 
 // display a custom cursor when placing a new thread
-function NewThreadCursor({ display }: { display: boolean }) {
+const NewThreadCursor = ({ display }: { display: boolean }) => {
   const [coords, setCoords] = useState({
     x: -10000,
     y: -10000,
@@ -71,13 +71,13 @@ function NewThreadCursor({ display }: { display: boolean }) {
     // Portal.Root is used to render a component outside of its parent component
     <Portal.Root>
       <div
-        className="fixed top-0 left-0 pointer-events-none select-none w-9 h-9 shadow-2xl rounded-tl-md rounded-tr-full rounded-br-full rounded-bl-full cursor-grab bg-white"
+        className="pointer-events-none fixed left-0 top-0 h-9 w-9 cursor-grab select-none rounded-bl-full rounded-br-full rounded-tl-md rounded-tr-full bg-white shadow-2xl"
         style={{
           transform: `translate(${coords.x}px, ${coords.y}px)`,
         }}
       />
     </Portal.Root>
   );
-}
+};
 
 export default NewThreadCursor;

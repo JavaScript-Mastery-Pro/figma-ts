@@ -1,23 +1,19 @@
 "use client";
 
-import {
-  ThreadMetadata,
-  useEditThreadMetadata,
-  useThreads,
-  useUser,
-} from "@/liveblocks.config";
 import { useCallback, useRef } from "react";
 import { ThreadData } from "@liveblocks/client";
 
-import { PinnedThread } from "./PinnedThread";
+import { ThreadMetadata, useEditThreadMetadata, useThreads, useUser } from "@/liveblocks.config";
 import { useMaxZIndex } from "@/lib/useMaxZIndex";
+
+import { PinnedThread } from "./PinnedThread";
 
 type OverlayThreadProps = {
   thread: ThreadData<ThreadMetadata>;
   maxZIndex: number;
 };
 
-export function CommentsOverlay() {
+export const CommentsOverlay = () => {
   /**
    * We're using the useThreads hook to get the list of threads
    * in the room.
@@ -34,17 +30,13 @@ export function CommentsOverlay() {
       {threads
         .filter((thread) => !thread.metadata.resolved)
         .map((thread) => (
-          <OverlayThread
-            key={thread.id}
-            thread={thread}
-            maxZIndex={maxZIndex}
-          />
+          <OverlayThread key={thread.id} thread={thread} maxZIndex={maxZIndex} />
         ))}
     </div>
   );
-}
+};
 
-function OverlayThread({ thread, maxZIndex }: OverlayThreadProps) {
+const OverlayThread = ({ thread, maxZIndex }: OverlayThreadProps) => {
   /**
    * We're using the useEditThreadMetadata hook to edit the metadata
    * of a thread.
@@ -86,7 +78,7 @@ function OverlayThread({ thread, maxZIndex }: OverlayThreadProps) {
     <div
       ref={threadRef}
       id={`thread-${thread.id}`}
-      className="flex gap-5 absolute top-0 left-0"
+      className="absolute left-0 top-0 flex gap-5"
       style={{
         /**
          * Disclaimer: this is a hack to position the thread at the right
@@ -97,13 +89,11 @@ function OverlayThread({ thread, maxZIndex }: OverlayThreadProps) {
          * the comment composer so we need to subtract them to position
          * the thread correctly.
          */
-        transform: `translate(${thread.metadata.cursorX - 220}px, ${
-          thread.metadata.cursorY - 60
-        }px)`,
+        transform: `translate(${thread.metadata.cursorX - 220}px, ${thread.metadata.cursorY - 60}px)`,
       }}
     >
       {/* render the thread */}
       <PinnedThread thread={thread} onFocus={handleIncreaseZIndex} />
     </div>
   );
-}
+};

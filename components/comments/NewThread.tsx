@@ -1,19 +1,11 @@
 "use client";
 
-import {
-  FormEvent,
-  ReactNode,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { FormEvent, ReactNode, useCallback, useEffect, useRef, useState } from "react";
 import { Slot } from "@radix-ui/react-slot";
 import * as Portal from "@radix-ui/react-portal";
 import { ComposerSubmitComment } from "@liveblocks/react-comments/primitives";
 
 import { useCreateThread } from "@/liveblocks.config";
-
 import { useMaxZIndex } from "@/lib/useMaxZIndex";
 import { getCoordsFromPointerEvent } from "@/lib/coords";
 
@@ -21,16 +13,17 @@ import PinnedComposer from "./PinnedComposer";
 import NewThreadCursor from "./NewThreadCursor";
 
 type ComposerCoords = null | { x: number; y: number };
+type CommentingState = "placing" | "placed" | "complete";
 
 type Props = {
   children: ReactNode;
 };
 
-export function NewThread({ children }: Props) {
+export const NewThread = ({ children }: Props) => {
   // set state to track if we're placing a new comment or not
-  const [creatingCommentState, setCreatingCommentState] = useState<
-    "placing" | "placed" | "complete"
-  >("complete");
+  const [creatingCommentState, setCreatingCommentState] = useState<"placing" | "placed" | "complete">(
+    "complete"
+  );
 
   /**
    * We're using the useCreateThread hook to create a new thread.
@@ -60,7 +53,7 @@ export function NewThread({ children }: Props) {
     }
 
     // Place a composer on the screen
-    function newComment(e: MouseEvent) {
+    const newComment = (e: MouseEvent) => {
       e.preventDefault();
 
       // If already placed, click outside to close composer
@@ -75,7 +68,7 @@ export function NewThread({ children }: Props) {
         x: e.pageX,
         y: e.pageY,
       });
-    }
+    };
 
     document.documentElement.addEventListener("click", newComment);
 
@@ -86,19 +79,16 @@ export function NewThread({ children }: Props) {
 
   useEffect(() => {
     // If dragging composer, update position
-    function handlePointerMove(e: PointerEvent) {
+    const handlePointerMove = (e: PointerEvent) => {
       // Prevents issue with composedPath getting removed
       (e as any)._savedComposedPath = e.composedPath();
       lastPointerEvent.current = e;
-    }
+    };
 
     document.documentElement.addEventListener("pointermove", handlePointerMove);
 
     return () => {
-      document.documentElement.removeEventListener(
-        "pointermove",
-        handlePointerMove
-      );
+      document.documentElement.removeEventListener("pointermove", handlePointerMove);
     };
   }, []);
 
@@ -108,7 +98,7 @@ export function NewThread({ children }: Props) {
       return;
     }
 
-    function handlePointerDown(e: PointerEvent) {
+    const handlePointerDown = (e: PointerEvent) => {
       // if composer is already placed, don't do anything
       if (allowComposerRef.current) {
         return;
@@ -118,28 +108,22 @@ export function NewThread({ children }: Props) {
       (e as any)._savedComposedPath = e.composedPath();
       lastPointerEvent.current = e;
       setAllowUseComposer(true);
-    }
+    };
 
     // Right click to cancel placing
-    function handleContextMenu(e: Event) {
+    const handleContextMenu = (e: Event) => {
       if (creatingCommentState === "placing") {
         e.preventDefault();
         setCreatingCommentState("complete");
       }
-    }
+    };
 
     document.documentElement.addEventListener("pointerdown", handlePointerDown);
     document.documentElement.addEventListener("contextmenu", handleContextMenu);
 
     return () => {
-      document.documentElement.removeEventListener(
-        "pointerdown",
-        handlePointerDown
-      );
-      document.documentElement.removeEventListener(
-        "contextmenu",
-        handleContextMenu
-      );
+      document.documentElement.removeEventListener("pointerdown", handlePointerDown);
+      document.documentElement.removeEventListener("contextmenu", handleContextMenu);
     };
   }, [creatingCommentState]);
 
@@ -154,8 +138,7 @@ export function NewThread({ children }: Props) {
       }
 
       // get the cursor selectors from the last pointer event
-      const { cursorSelectors = [] } =
-        getCoordsFromPointerEvent(lastPointerEvent.current) || {};
+      const { cursorSelectors = [] } = getCoordsFromPointerEvent(lastPointerEvent.current) || {};
 
       // create a new thread with the composer coords and cursor selectors
       createThread({
@@ -188,11 +171,7 @@ export function NewThread({ children }: Props) {
        * it's already included when we install Shadcn
        */}
       <Slot
-        onClick={() =>
-          setCreatingCommentState(
-            creatingCommentState !== "complete" ? "complete" : "placing"
-          )
-        }
+        onClick={() => setCreatingCommentState(creatingCommentState !== "complete" ? "complete" : "placing")}
         style={{ opacity: creatingCommentState !== "complete" ? 0.7 : 1 }}
       >
         {children}
@@ -206,7 +185,7 @@ export function NewThread({ children }: Props) {
          * Portal.Root: https://www.radix-ui.com/primitives/docs/utilities/portal
          */
         <Portal.Root
-          className="absolute top-0 left-0"
+          className="absolute left-0 top-0"
           style={{
             pointerEvents: allowUseComposer ? "initial" : "none",
             transform: `translate(${composerCoords.x}px, ${composerCoords.y}px)`,
@@ -221,4 +200,4 @@ export function NewThread({ children }: Props) {
       <NewThreadCursor display={creatingCommentState === "placing"} />
     </>
   );
-}
+};

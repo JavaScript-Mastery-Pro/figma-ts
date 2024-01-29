@@ -1,40 +1,23 @@
 "use client";
 
-import {
-  useBroadcastEvent,
-  useEventListener,
-  useMyPresence,
-  useOthers,
-} from "@/liveblocks.config";
 import { useCallback, useEffect, useState } from "react";
 
-import {
-  FlyingReaction,
-  ReactionSelector,
-  CursorChat,
-  LiveCursors,
-} from "./index";
+import { useBroadcastEvent, useEventListener, useMyPresence, useOthers } from "@/liveblocks.config";
 import useInterval from "@/hooks/useInterval";
-
 import { CursorMode, CursorState, Reaction, ReactionEvent } from "@/types/type";
-import { Comments } from "./comments/Comments";
 import { shortcuts } from "@/constants";
-import {
-  ContextMenu,
-  ContextMenuTrigger,
-  ContextMenuContent,
-  ContextMenuItem,
-} from "./ui/context-menu";
 
-function Live({
-  canvasRef,
-  undo,
-  redo,
-}: {
+import { Comments } from "./comments/Comments";
+import { CursorChat, FlyingReaction, LiveCursors, ReactionSelector } from "./index";
+import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuTrigger } from "./ui/context-menu";
+
+type Props = {
   canvasRef: React.MutableRefObject<HTMLCanvasElement | null>;
   undo: () => void;
   redo: () => void;
-}) {
+};
+
+const Live = ({ canvasRef, undo, redo }: Props) => {
   /**
    * useOthers returns the list of other users in the room.
    *
@@ -72,18 +55,12 @@ function Live({
 
   // Remove reactions that are not visible anymore (every 1 sec)
   useInterval(() => {
-    setReactions((reactions) =>
-      reactions.filter((reaction) => reaction.timestamp > Date.now() - 4000)
-    );
+    setReactions((reactions) => reactions.filter((reaction) => reaction.timestamp > Date.now() - 4000));
   }, 1000);
 
   // Broadcast the reaction to other users (every 100ms)
   useInterval(() => {
-    if (
-      cursorState.mode === CursorMode.Reaction &&
-      cursorState.isPressed &&
-      cursor
-    ) {
+    if (cursorState.mode === CursorMode.Reaction && cursorState.isPressed && cursor) {
       // concat all the reactions created on mouse click
       setReactions((reactions) =>
         reactions.concat([
@@ -125,7 +102,7 @@ function Live({
 
   // Listen to keyboard events to change the cursor state
   useEffect(() => {
-    function onKeyUp(e: KeyboardEvent) {
+    const onKeyUp = (e: KeyboardEvent) => {
       if (e.key === "/") {
         setCursorState({
           mode: CursorMode.Chat,
@@ -138,13 +115,13 @@ function Live({
       } else if (e.key === "e") {
         setCursorState({ mode: CursorMode.ReactionSelector });
       }
-    }
+    };
 
-    function onKeyDown(e: KeyboardEvent) {
+    const onKeyDown = (e: KeyboardEvent) => {
       if (e.key === "/") {
         e.preventDefault();
       }
-    }
+    };
 
     window.addEventListener("keyup", onKeyUp);
     window.addEventListener("keydown", onKeyDown);
@@ -202,9 +179,7 @@ function Live({
 
       // if cursor is in reaction mode, set isPressed to true
       setCursorState((state: CursorState) =>
-        cursorState.mode === CursorMode.Reaction
-          ? { ...state, isPressed: true }
-          : state
+        cursorState.mode === CursorMode.Reaction ? { ...state, isPressed: true } : state
       );
     },
     [cursorState.mode, setCursorState]
@@ -213,9 +188,7 @@ function Live({
   // hide the cursor when the mouse is up
   const handlePointerUp = useCallback(() => {
     setCursorState((state: CursorState) =>
-      cursorState.mode === CursorMode.Reaction
-        ? { ...state, isPressed: false }
-        : state
+      cursorState.mode === CursorMode.Reaction ? { ...state, isPressed: false } : state
     );
   }, [cursorState.mode, setCursorState]);
 
@@ -250,7 +223,7 @@ function Live({
   return (
     <ContextMenu>
       <ContextMenuTrigger
-        className="relative flex flex-1 w-full h-full items-center justify-center"
+        className="relative flex h-full w-full flex-1 items-center justify-center"
         id="canvas"
         style={{
           cursor: cursorState.mode === CursorMode.Chat ? "none" : "auto",
@@ -299,7 +272,6 @@ function Live({
         <Comments />
       </ContextMenuTrigger>
 
-      {/* Show the content of right menu click */}
       <ContextMenuContent className="right-menu-content">
         {shortcuts.map((item) => (
           <ContextMenuItem
@@ -308,12 +280,12 @@ function Live({
             onClick={() => handleContextMenuClick(item.name)}
           >
             <p>{item.name}</p>
-            <p className="text-primary-grey-300 text-xs">{item.shortcut}</p>
+            <p className="text-xs text-primary-grey-300">{item.shortcut}</p>
           </ContextMenuItem>
         ))}
       </ContextMenuContent>
     </ContextMenu>
   );
-}
+};
 
 export default Live;

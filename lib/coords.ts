@@ -1,6 +1,8 @@
-export function getCoordsFromPointerEvent<El>(e: PointerEvent): {
+export const getCoordsFromPointerEvent = <El>(
+  e: PointerEvent
+): {
   cursorSelectors: string[];
-} | null {
+} | null => {
   if (!e.target || !(e.target as any)?.getBoundingClientRect) {
     return null;
   }
@@ -20,9 +22,9 @@ export function getCoordsFromPointerEvent<El>(e: PointerEvent): {
   return {
     cursorSelectors,
   };
-}
+};
 
-function generateSelectors(pathArray: Element[]): string[] | null {
+const generateSelectors = (pathArray: Element[]): string[] | null => {
   let nthChildFromLowestIdSelectors: string[] = [];
   let nthChildSelectors: string[] = [];
   let classNameSelectors: string[] = [];
@@ -99,4 +101,4 @@ function generateSelectors(pathArray: Element[]): string[] | null {
   return [id, nthChildPathFromLowestId, nthChildPath, classNamePath].filter(
     (selector) => selector
   );
-}
+};

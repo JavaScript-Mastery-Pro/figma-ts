@@ -9,11 +9,10 @@ import {
   CanvasObjectScaling,
   CanvasPathCreated,
   CanvasSelectionCreated,
-  CustomFabricObject,
   RenderCanvas,
 } from "@/types/type";
-import { createSpecificShape } from "./shapes";
 import { defaultNavElement } from "@/constants";
+import { createSpecificShape } from "./shapes";
 
 // initialize fabric canvas
 export const initializeFabric = ({
@@ -71,11 +70,7 @@ export const handleCanvasMouseDown = ({
   canvas.isDrawingMode = false;
 
   // if target is the selected shape or active selection, set isDrawing to false
-  if (
-    target &&
-    (target.type === selectedShapeRef.current ||
-      target.type === "activeSelection")
-  ) {
+  if (target && (target.type === selectedShapeRef.current || target.type === "activeSelection")) {
     isDrawing.current = false;
 
     // set active object to target
@@ -90,10 +85,7 @@ export const handleCanvasMouseDown = ({
     isDrawing.current = true;
 
     // create custom fabric object/shape and set it to shapeRef
-    shapeRef.current = createSpecificShape(
-      selectedShapeRef.current,
-      pointer as any
-    );
+    shapeRef.current = createSpecificShape(selectedShapeRef.current, pointer as any);
 
     // if shapeRef is not null, add it to canvas
     if (shapeRef.current) {
@@ -201,10 +193,7 @@ export const handleCanvasMouseUp = ({
 };
 
 // update shape in storage when object is modified
-export const handleCanvasObjectModified = ({
-  options,
-  syncShapeInStorage,
-}: CanvasObjectModified) => {
+export const handleCanvasObjectModified = ({ options, syncShapeInStorage }: CanvasObjectModified) => {
   const target = options.target;
   if (!target) return;
 
@@ -216,10 +205,7 @@ export const handleCanvasObjectModified = ({
 };
 
 // update shape in storage when path is created when in freeform mode
-export const handlePathCreated = ({
-  options,
-  syncShapeInStorage,
-}: CanvasPathCreated) => {
+export const handlePathCreated = ({ options, syncShapeInStorage }: CanvasPathCreated) => {
   // get path object
   const path = options.path;
   if (!path) return;
@@ -234,11 +220,7 @@ export const handlePathCreated = ({
 };
 
 // check how object is moving on canvas and restrict it to canvas boundaries
-export const handleCanvasObjectMoving = ({
-  options,
-}: {
-  options: fabric.IEvent;
-}) => {
+export const handleCanvasObjectMoving = ({ options }: { options: fabric.IEvent }) => {
   // get target object which is moving
   const target = options.target as fabric.Object;
 
@@ -252,10 +234,7 @@ export const handleCanvasObjectMoving = ({
   if (target && target.left) {
     target.left = Math.max(
       0,
-      Math.min(
-        target.left,
-        (canvas.width || 0) - (target.getScaledWidth() || target.width || 0)
-      )
+      Math.min(target.left, (canvas.width || 0) - (target.getScaledWidth() || target.width || 0))
     );
   }
 
@@ -263,19 +242,13 @@ export const handleCanvasObjectMoving = ({
   if (target && target.top) {
     target.top = Math.max(
       0,
-      Math.min(
-        target.top,
-        (canvas.height || 0) - (target.getScaledHeight() || target.height || 0)
-      )
+      Math.min(target.top, (canvas.height || 0) - (target.getScaledHeight() || target.height || 0))
     );
   }
 };
 
 // set element attributes when element is selected
-export const handleCanvasSelectionCreated = ({
-  options,
-  setElementAttributes,
-}: CanvasSelectionCreated) => {
+export const handleCanvasSelectionCreated = ({ options, setElementAttributes }: CanvasSelectionCreated) => {
   // if no element is selected, return
   if (!options?.selected) return;
 
@@ -301,10 +274,7 @@ export const handleCanvasSelectionCreated = ({
 };
 
 // update element attributes when element is scaled
-export const handleCanvasObjectScaling = ({
-  options,
-  setElementAttributes,
-}: CanvasObjectScaling) => {
+export const handleCanvasObjectScaling = ({ options, setElementAttributes }: CanvasObjectScaling) => {
   const selectedElement = options.target;
 
   setElementAttributes((prev) => ({
@@ -315,11 +285,7 @@ export const handleCanvasObjectScaling = ({
 };
 
 // render canvas objects coming from storage on canvas
-export const renderCanvas = ({
-  fabricRef,
-  canvasObjects,
-  activeObjectRef,
-}: RenderCanvas) => {
+export const renderCanvas = ({ fabricRef, canvasObjects, activeObjectRef }: RenderCanvas) => {
   // clear canvas
   fabricRef.current?.clear();
 
@@ -362,11 +328,7 @@ export const renderCanvas = ({
 };
 
 // resize canvas dimensions on window resize
-export const handleResize = ({
-  fabricRef,
-}: {
-  fabricRef: React.MutableRefObject<fabric.Canvas | null>;
-}) => {
+export const handleResize = ({ fabricRef }: { fabricRef: React.MutableRefObject<fabric.Canvas | null> }) => {
   const canvasElement = document.getElementById("canvas");
 
   if (!canvasElement) return;
