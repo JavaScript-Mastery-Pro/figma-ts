@@ -33,6 +33,10 @@ function Navbar({
         {navElements.map((item: ActiveElement | any) => (
           <li
             key={item.name}
+            onClick={() => {
+              if (Array.isArray(item.value)) return;
+              handleActiveElement(item);
+            }}
             className={`group px-2.5 py-5 flex justify-center items-center
             ${
               isActive(item.value)
@@ -53,10 +57,7 @@ function Navbar({
             ) : item?.value === "comments" ? (
               // If value is comments, trigger the NewThread component
               <NewThread>
-                <Button
-                  className="relative w-5 h-5 object-contain"
-                  onClick={() => handleActiveElement(item)}
-                >
+                <Button className="relative w-5 h-5 object-contain">
                   <Image
                     src={item.icon}
                     alt={item.name}
@@ -66,10 +67,7 @@ function Navbar({
                 </Button>
               </NewThread>
             ) : (
-              <Button
-                className="relative w-5 h-5 object-contain"
-                onClick={() => handleActiveElement(item)}
-              >
+              <Button className="relative w-5 h-5 object-contain">
                 <Image
                   src={item.icon}
                   alt={item.name}
