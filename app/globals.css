@@ -16,4 +16,12 @@
   .input-ring {
     @apply focus-visible:ring-offset-0 ring-offset-0 outline-none  focus:ring-primary-green focus:ring-1 focus:ring-offset-0 rounded-none  border-none bg-transparent h-8 !important;
   }
+
+  .right-menu-content {
+    @apply flex flex-col gap-y-1 border-none bg-primary-black py-4 text-white w-80 !important;
+  }
+
+  .right-menu-item {
+    @apply flex px-3 py-2 justify-between hover:bg-primary-grey-200 !important;
+  }
 }
