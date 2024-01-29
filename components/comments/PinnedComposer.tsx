@@ -29,10 +29,6 @@ const PinnedComposer = ({ onComposerSubmit, ...props }: Props) => {
          */}
         <Composer
           onComposerSubmit={onComposerSubmit}
-          onClick={(e) => {
-            e.stopPropagation();
-            e.preventDefault();
-          }}
           autoFocus={true}
         />
       </div>

@@ -7,13 +7,11 @@ import { ComposerSubmitComment } from "@liveblocks/react-comments/primitives";
 
 import { useCreateThread } from "@/liveblocks.config";
 import { useMaxZIndex } from "@/lib/useMaxZIndex";
-import { getCoordsFromPointerEvent } from "@/lib/coords";
 
 import PinnedComposer from "./PinnedComposer";
 import NewThreadCursor from "./NewThreadCursor";
 
 type ComposerCoords = null | { x: number; y: number };
-type CommentingState = "placing" | "placed" | "complete";
 
 type Props = {
   children: ReactNode;
@@ -131,22 +129,27 @@ export const NewThread = ({ children }: Props) => {
   const handleComposerSubmit = useCallback(
     ({ body }: ComposerSubmitComment, event: FormEvent<HTMLFormElement>) => {
       event.preventDefault();
+      event.stopPropagation();
+
+      // Get your canvas element
+      const overlayPanel = document.querySelector("#canvas");
 
       // if there's no composer coords or last pointer event, meaning the user hasn't clicked yet, don't do anything
-      if (!composerCoords || !lastPointerEvent.current) {
+      if (!composerCoords || !lastPointerEvent.current || !overlayPanel) {
         return;
       }
 
-      // get the cursor selectors from the last pointer event
-      const { cursorSelectors = [] } = getCoordsFromPointerEvent(lastPointerEvent.current) || {};
+      // Set coords relative to the top left of your canvas
+      const { top, left } = overlayPanel.getBoundingClientRect();
+      const x = lastPointerEvent.current.clientX - left;
+      const y = lastPointerEvent.current.clientY - top;
 
       // create a new thread with the composer coords and cursor selectors
       createThread({
         body,
         metadata: {
-          cursorSelectors: cursorSelectors.join(","),
-          cursorX: composerCoords.x,
-          cursorY: composerCoords.y,
+          x,
+          y,
           resolved: false,
           zIndex: maxZIndex + 1,
         },

@@ -80,16 +80,7 @@ const OverlayThread = ({ thread, maxZIndex }: OverlayThreadProps) => {
       id={`thread-${thread.id}`}
       className="absolute left-0 top-0 flex gap-5"
       style={{
-        /**
-         * Disclaimer: this is a hack to position the thread at the right
-         * place. I found it by trial and error. Without subtracting 220px
-         * and 60px, the thread is not positioned correctly on the canvas.
-         *
-         * One guess is that 220px and 60px are the width and height of
-         * the comment composer so we need to subtract them to position
-         * the thread correctly.
-         */
-        transform: `translate(${thread.metadata.cursorX - 220}px, ${thread.metadata.cursorY - 60}px)`,
+        transform: `translate(${thread.metadata.x}px, ${thread.metadata.y}px)`,
       }}
     >
       {/* render the thread */}

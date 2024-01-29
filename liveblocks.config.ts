@@ -43,11 +43,10 @@ type RoomEvent = {
 // each thread. Can only contain booleans, strings, and numbers.
 export type ThreadMetadata = {
   resolved: boolean;
-  quote: string;
-  time: number;
   zIndex: number;
-  cursorX: number;
-  cursorY: number;
+  time?: number;
+  x: number;
+  y: number;
 };
 
 export const {
