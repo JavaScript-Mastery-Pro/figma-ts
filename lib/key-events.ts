@@ -124,7 +124,7 @@ export const handleKeyDown = ({
     redo();
   }
 
-  if (e.keyCode === 191) {
+  if (e.keyCode === 191 && !e.shiftKey) {
     e.preventDefault();
   }
 };
