@@ -58,8 +58,11 @@ export const createText = (pointer: PointerEvent, text: string) => {
     left: pointer.x,
     top: pointer.y,
     fill: "#aabbcc",
-    objectId: uuidv4(),
-  } as CustomFabricObject<fabric.IText>);
+    fontFamily: "Helvetica",
+    fontSize: 36,
+    fontWeight: "400",
+    objectId: uuidv4()
+  } as fabric.ITextOptions);
 };
 
 export const createSpecificShape = (
