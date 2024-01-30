@@ -21,11 +21,16 @@ export const PinnedThread = ({ thread, onFocus, ...props }: Props) => {
 
   const [minimized, setMinimized] = useState(startMinimized);
 
-  // memoize the result of this function so that it doesn't change on every render but only when the thread changes
+  /**
+   * memoize the result of this function so that it doesn't change on every render but only when the thread changes
+   * Memo is used to optimize performance and avoid unnecessary re-renders.
+   *
+   * useMemo: https://react.dev/reference/react/useMemo
+   */
   const memoizedContent = useMemo(
     () => (
       <div
-        className='absolute flex cursor-pointer gap-4'
+        className="absolute flex cursor-pointer gap-4"
         {...props}
         onClick={() => {
           onFocus(thread.id);
@@ -33,20 +38,20 @@ export const PinnedThread = ({ thread, onFocus, ...props }: Props) => {
         }}
       >
         <div
-          className='relative flex h-9 w-9 select-none items-center justify-center rounded-bl-full rounded-br-full rounded-tl-md rounded-tr-full bg-white shadow'
+          className="relative flex h-9 w-9 select-none items-center justify-center rounded-bl-full rounded-br-full rounded-tl-md rounded-tr-full bg-white shadow"
           data-draggable={true}
         >
           <Image
             src={`https://liveblocks.io/avatars/avatar-${Math.floor(Math.random() * 30)}.png`}
-            alt='Dummy Name'
+            alt="Dummy Name"
             width={28}
             height={28}
             draggable={false}
-            className='rounded-full'
+            className="rounded-full"
           />
         </div>
         {!minimized ? (
-          <div className='flex min-w-60 flex-col overflow-hidden rounded-lg bg-white text-sm shadow'>
+          <div className="flex min-w-60 flex-col overflow-hidden rounded-lg bg-white text-sm shadow">
             <Thread thread={thread} indentCommentContent={false} />
           </div>
         ) : null}

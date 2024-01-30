@@ -8,9 +8,21 @@ import { useOthers, useSelf } from "@/liveblocks.config";
 import Avatar from "./Avatar";
 
 const ActiveUsers = () => {
+  /**
+   * useOthers returns the list of other users in the room.
+   *
+   * useOthers: https://liveblocks.io/docs/api-reference/liveblocks-react#useOthers
+   */
   const others = useOthers();
+
+  /**
+   * useSelf returns the current user details in the room
+   *
+   * useSelf: https://liveblocks.io/docs/api-reference/liveblocks-react#useSelf
+   */
   const currentUser = useSelf();
 
+  // memoize the result of this function so that it doesn't change on every render but only when there are new users joining the room
   const memoizedUsers = useMemo(() => {
     const hasMoreUsers = others.length > 2;
 
