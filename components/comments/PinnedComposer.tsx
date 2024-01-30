@@ -30,6 +30,9 @@ const PinnedComposer = ({ onComposerSubmit, ...props }: Props) => {
         <Composer
           onComposerSubmit={onComposerSubmit}
           autoFocus={true}
+          onKeyUp={(e) => {
+            e.stopPropagation()
+          }}
         />
       </div>
     </div>
