@@ -256,14 +256,23 @@ export const handleCanvasSelectionCreated = ({ options, isEditingRef, setElement
   if (!options?.selected) return;
 
   // get the selected element
-  const selectedElement = options?.selected[0];
+  const selectedElement = options?.selected[0] as fabric.Object;
 
   // if only one element is selected, set element attributes
   if (selectedElement && options.selected.length === 1) {
+
+    // calculate scaled dimensions of the object
+    const scaledWidth = selectedElement?.scaleX
+      ? selectedElement?.width! * selectedElement?.scaleX
+      : selectedElement?.width;
+
+    const scaledHeight = selectedElement?.scaleY
+      ? selectedElement?.height! * selectedElement?.scaleY
+      : selectedElement?.height;
+
     setElementAttributes({
-      // getScaledWidth() and getScaledHeight() are used to get the scaled dimensions of the object. These are the latest dimensions of the object after scaling
-      width: selectedElement.width?.toFixed(0).toString() || "",
-      height: selectedElement.height?.toFixed(0).toString() || "",
+      width: scaledWidth?.toFixed(0).toString() || "",
+      height: scaledHeight?.toFixed(0).toString() || "",
       fill: selectedElement?.fill?.toString() || "",
       stroke: selectedElement?.stroke || "",
       // @ts-ignore
@@ -280,10 +289,20 @@ export const handleCanvasSelectionCreated = ({ options, isEditingRef, setElement
 export const handleCanvasObjectScaling = ({ options, setElementAttributes }: CanvasObjectScaling) => {
   const selectedElement = options.target;
 
+  // calculate scaled dimensions of the object
+  const scaledWidth = selectedElement?.scaleX
+    ? selectedElement?.width! * selectedElement?.scaleX
+    : selectedElement?.width;
+
+  const scaledHeight = selectedElement?.scaleY
+    ? selectedElement?.height! * selectedElement?.scaleY
+    : selectedElement?.height;
+
+
   setElementAttributes((prev) => ({
     ...prev,
-    width: selectedElement?.getScaledWidth().toFixed(0).toString() || "",
-    height: selectedElement?.getScaledHeight()?.toFixed(0).toString() || "",
+    width: scaledWidth?.toFixed(0).toString() || "",
+    height: scaledHeight?.toFixed(0).toString() || "",
   }));
 };
 
