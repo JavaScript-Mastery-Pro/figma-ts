@@ -142,21 +142,14 @@ export const modifyShape = ({
 
   if (!selectedElement || selectedElement?.type === "activeSelection") return;
 
-  // if property is width or height, we need to use scaleToWidth or scaleToHeight
-  if (property === "width") {
-    selectedElement.scaleToWidth(value);
-  } else if (property === "height") {
-    selectedElement.scaleToHeight(value);
-    canvas.requestRenderAll();
-  } else {
-    if (selectedElement[property as keyof object] === value) return;
-    selectedElement.set(property as keyof object, value);
-  }
+
+  if (selectedElement[property as keyof object] === value) return;
+  selectedElement.set(property as keyof object, value);
 
   // set selectedElement to activeObjectRef
   activeObjectRef.current = selectedElement;
 
-  canvas.requestRenderAll();
+  // canvas.requestRenderAll();
 
   syncShapeInStorage(selectedElement);
 };

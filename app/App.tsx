@@ -96,6 +96,7 @@ const Home = () => {
    * canvas re-renders.
    */
   const activeObjectRef = useRef<fabric.Object | null>(null);
+  const isEditingRef = useRef(false);
 
   /**
    * imageInputRef is a reference to the input element that we use to upload
@@ -384,6 +385,7 @@ const Home = () => {
     canvas.on("selection:created", (options) => {
       handleCanvasSelectionCreated({
         options,
+        isEditingRef,
         setElementAttributes,
       });
     });
@@ -514,6 +516,7 @@ const Home = () => {
           elementAttributes={elementAttributes}
           setElementAttributes={setElementAttributes}
           fabricRef={fabricRef}
+          isEditingRef={isEditingRef}
           activeObjectRef={activeObjectRef}
           syncShapeInStorage={syncShapeInStorage}
         />

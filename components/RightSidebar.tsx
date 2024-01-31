@@ -13,12 +13,15 @@ const RightSidebar = ({
   setElementAttributes,
   fabricRef,
   activeObjectRef,
+  isEditingRef,
   syncShapeInStorage,
 }: RightSidebarProps) => {
   const colorInputRef = useRef(null);
   const strokeInputRef = useRef(null);
 
   const handleInputChange = (property: string, value: string) => {
+    if (!isEditingRef.current) isEditingRef.current = true;
+
     setElementAttributes((prev) => ({ ...prev, [property]: value }));
 
     modifyShape({
@@ -40,6 +43,7 @@ const RightSidebar = ({
         </span>
 
         <Dimensions
+          isEditingRef={isEditingRef}
           width={elementAttributes.width}
           height={elementAttributes.height}
           handleInputChange={handleInputChange}
@@ -50,6 +54,7 @@ const RightSidebar = ({
           fontSize={elementAttributes.fontSize}
           fontWeight={elementAttributes.fontWeight}
           handleInputChange={handleInputChange}
+ 
         />
 
         <Color

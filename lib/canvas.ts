@@ -248,7 +248,10 @@ export const handleCanvasObjectMoving = ({ options }: { options: fabric.IEvent }
 };
 
 // set element attributes when element is selected
-export const handleCanvasSelectionCreated = ({ options, setElementAttributes }: CanvasSelectionCreated) => {
+export const handleCanvasSelectionCreated = ({ options, isEditingRef, setElementAttributes }: CanvasSelectionCreated) => {
+  // if user is editing manually, return
+  if (isEditingRef.current) return;
+
   // if no element is selected, return
   if (!options?.selected) return;
 
@@ -259,8 +262,8 @@ export const handleCanvasSelectionCreated = ({ options, setElementAttributes }: 
   if (selectedElement && options.selected.length === 1) {
     setElementAttributes({
       // getScaledWidth() and getScaledHeight() are used to get the scaled dimensions of the object. These are the latest dimensions of the object after scaling
-      width: Math.round(selectedElement?.getScaledWidth() || 0).toString(),
-      height: Math.round(selectedElement?.getScaledHeight() || 0).toString(),
+      width: selectedElement.width?.toFixed(0).toString() || "",
+      height: selectedElement.height?.toFixed(0).toString() || "",
       fill: selectedElement?.fill?.toString() || "",
       stroke: selectedElement?.stroke || "",
       // @ts-ignore
@@ -279,8 +282,8 @@ export const handleCanvasObjectScaling = ({ options, setElementAttributes }: Can
 
   setElementAttributes((prev) => ({
     ...prev,
-    width: Math.round(selectedElement?.getScaledWidth() || 0).toString(),
-    height: Math.round(selectedElement?.getScaledHeight() || 0).toString(),
+    width: selectedElement?.getScaledWidth().toFixed(0).toString() || "",
+    height: selectedElement?.getScaledHeight()?.toFixed(0).toString() || "",
   }));
 };
 

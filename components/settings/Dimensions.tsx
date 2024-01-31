@@ -9,10 +9,11 @@ const dimensionsOptions = [
 type Props = {
   width: string;
   height: string;
+  isEditingRef: React.MutableRefObject<boolean>;
   handleInputChange: (property: string, value: string) => void;
 };
 
-const Dimensions = ({ width, height, handleInputChange }: Props) => (
+const Dimensions = ({ width, height, isEditingRef, handleInputChange }: Props) => (
   <section className='flex flex-col border-b border-primary-grey-200'>
     <div className='flex flex-col gap-4 px-6 py-3'>
       {dimensionsOptions.map((item) => (
@@ -27,11 +28,11 @@ const Dimensions = ({ width, height, handleInputChange }: Props) => (
             type='number'
             id={item.property}
             placeholder='100'
-            min={10}
-            max={10}
             value={item.property === "width" ? width : height}
             className='input-ring'
+            min={10}
             onChange={(e) => handleInputChange(item.property, e.target.value)}
+            onBlur={() => (isEditingRef.current = false)}
           />
         </div>
       ))}
