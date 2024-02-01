@@ -1,6 +1,13 @@
 "use client";
 
-import { FormEvent, ReactNode, useCallback, useEffect, useRef, useState } from "react";
+import {
+  FormEvent,
+  ReactNode,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { Slot } from "@radix-ui/react-slot";
 import * as Portal from "@radix-ui/react-portal";
 import { ComposerSubmitComment } from "@liveblocks/react-comments/primitives";
@@ -19,9 +26,9 @@ type Props = {
 
 export const NewThread = ({ children }: Props) => {
   // set state to track if we're placing a new comment or not
-  const [creatingCommentState, setCreatingCommentState] = useState<"placing" | "placed" | "complete">(
-    "complete"
-  );
+  const [creatingCommentState, setCreatingCommentState] = useState<
+    "placing" | "placed" | "complete"
+  >("complete");
 
   /**
    * We're using the useCreateThread hook to create a new thread.
@@ -56,15 +63,30 @@ export const NewThread = ({ children }: Props) => {
 
       // If already placed, click outside to close composer
       if (creatingCommentState === "placed") {
-        setCreatingCommentState("complete");
-        return;
+        // check if the click event is on/inside the composer
+        const isClickOnComposer = ((e as any)._savedComposedPath = e
+          .composedPath()
+          .some((el: any) => {
+            return el.classList?.contains("lb-composer-editor-actions");
+          }));
+
+        // if click is inisde/on composer, don't do anything
+        if (isClickOnComposer) {
+          return;
+        }
+
+        // if click is outside composer, close composer
+        if (!isClickOnComposer) {
+          setCreatingCommentState("complete");
+          return;
+        }
       }
 
       // First click sets composer down
       setCreatingCommentState("placed");
       setComposerCoords({
-        x: e.pageX,
-        y: e.pageY,
+        x: e.clientX,
+        y: e.clientY,
       });
     };
 
@@ -86,7 +108,10 @@ export const NewThread = ({ children }: Props) => {
     document.documentElement.addEventListener("pointermove", handlePointerMove);
 
     return () => {
-      document.documentElement.removeEventListener("pointermove", handlePointerMove);
+      document.documentElement.removeEventListener(
+        "pointermove",
+        handlePointerMove
+      );
     };
   }, []);
 
@@ -120,8 +145,14 @@ export const NewThread = ({ children }: Props) => {
     document.documentElement.addEventListener("contextmenu", handleContextMenu);
 
     return () => {
-      document.documentElement.removeEventListener("pointerdown", handlePointerDown);
-      document.documentElement.removeEventListener("contextmenu", handleContextMenu);
+      document.documentElement.removeEventListener(
+        "pointerdown",
+        handlePointerDown
+      );
+      document.documentElement.removeEventListener(
+        "contextmenu",
+        handleContextMenu
+      );
     };
   }, [creatingCommentState]);
 
@@ -141,8 +172,8 @@ export const NewThread = ({ children }: Props) => {
 
       // Set coords relative to the top left of your canvas
       const { top, left } = overlayPanel.getBoundingClientRect();
-      const x = lastPointerEvent.current.clientX - left;
-      const y = lastPointerEvent.current.clientY - top;
+      const x = composerCoords.x - left;
+      const y = composerCoords.y - top;
 
       // create a new thread with the composer coords and cursor selectors
       createThread({
@@ -174,7 +205,11 @@ export const NewThread = ({ children }: Props) => {
        * it's already included when we install Shadcn
        */}
       <Slot
-        onClick={() => setCreatingCommentState(creatingCommentState !== "complete" ? "complete" : "placing")}
+        onClick={() =>
+          setCreatingCommentState(
+            creatingCommentState !== "complete" ? "complete" : "placing"
+          )
+        }
         style={{ opacity: creatingCommentState !== "complete" ? 0.7 : 1 }}
       >
         {children}
@@ -188,7 +223,7 @@ export const NewThread = ({ children }: Props) => {
          * Portal.Root: https://www.radix-ui.com/primitives/docs/utilities/portal
          */
         <Portal.Root
-          className="absolute left-0 top-0"
+          className='absolute left-0 top-0'
           style={{
             pointerEvents: allowUseComposer ? "initial" : "none",
             transform: `translate(${composerCoords.x}px, ${composerCoords.y}px)`,
