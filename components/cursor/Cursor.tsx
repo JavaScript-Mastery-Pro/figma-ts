@@ -4,7 +4,7 @@ type Props = {
   color: string;
   x: number;
   y: number;
-  message?: string;
+  message: string | null;
 };
 
 const Cursor = ({ color, x, y, message }: Props) => (
