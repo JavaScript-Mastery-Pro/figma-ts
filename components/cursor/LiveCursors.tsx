@@ -1,9 +1,16 @@
 import Cursor from "./Cursor";
 import { COLORS } from "@/constants";
-import { LiveCursorProps } from "@/types/type";
+import { useOthers } from "@/liveblocks.config";
 
 // display all other live cursors
-const LiveCursors = ({ others }: LiveCursorProps) => {
+const LiveCursors = () => {
+  /**
+   * useOthers returns the list of other users in the room.
+   *
+   * useOthers: https://liveblocks.io/docs/api-reference/liveblocks-react#useOthers
+   */
+  const others = useOthers();
+
   return others.map(({ connectionId, presence }) => {
     if (presence == null || !presence?.cursor) {
       return null;
